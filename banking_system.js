@@ -19,7 +19,7 @@ function showMenu() {
 
     rl.question('Pilih opsi (1-4): ', (answer) => {
         if (answer === '1') {
-            checkSaldo();
+            checkBalance();
         } else if (answer === '2') {
             promptDeposit();
         } else if (answer === '3') {
@@ -33,38 +33,59 @@ function showMenu() {
     });
 }
 
-function checkSaldo() {
-    console.log(`Saldo Anda saat ini: Rp${myAccount.saldo}`);
-    showMenu();
+async function checkBalance() {
+    try {
+        console.log(`Saldo Anda saat ini: Rp${myAccount.balance}`);
+    } catch (error) {
+        console.error('Error saat memeriksa saldo:', error);
+    } finally {
+        showMenu();
+    }
 }
 
-function promptDeposit() {
-    rl.question('Masukkan jumlah yang akan dideposit: ', (amount) => {
-        amount = parseInt(amount, 10);
-        myAccount.deposit(amount)
-            .then((message) => {
+function validateAmountInput(input) {
+    const amount = parseInt(input, 10);
+    if (isNaN(amount) || amount <= 0) {
+        return null;
+    }
+    return amount;
+}
+
+async function promptDeposit() {
+    rl.question('Masukkan jumlah yang akan dideposit: ', async (input) => {
+        const amount = validateAmountInput(input);
+        if (amount === null) {
+            console.log('Masukkan jumlah yang valid (hanya angka positif).');
+            promptDeposit();
+        } else {
+            try {
+                const message = await myAccount.deposit(amount);
                 console.log(message);
-                showMenu();
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.error('Error:', error);
+            } finally {
                 showMenu();
-            });
+            }
+        }
     });
 }
 
-function promptWithdraw() {
-    rl.question('Masukkan jumlah yang akan ditarik: ', (amount) => {
-        amount = parseInt(amount, 10);
-        myAccount.withdraw(amount)
-            .then((message) => {
+async function promptWithdraw() {
+    rl.question('Masukkan jumlah yang akan ditarik: ', async (input) => {
+        const amount = validateAmountInput(input);
+        if (amount === null) {
+            console.log('Masukkan jumlah yang valid (hanya angka positif).');
+            promptWithdraw();
+        } else {
+            try {
+                const message = await myAccount.withdraw(amount);
                 console.log(message);
-                showMenu();
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.error('Error:', error);
+            } finally {
                 showMenu();
-            });
+            }
+        }
     });
 }
 
