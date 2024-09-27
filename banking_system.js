@@ -1,16 +1,16 @@
 const readline = require('readline');
-const BankAccount = require('./bank_account');
+const { BankAccount, SavingsAccount } = require('./bank_account'); 
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-const myAccount = new BankAccount('Muhamad Royhan Fadhli');
+const myAccount = new SavingsAccount('Muhamad Royhan Fadhli', 5);
 
 function showMenu() {
     console.log(`
-    === Basic Banking System ===
+    === Sistem Perbankan Dasar ===
     1. Cek Saldo
     2. Deposit
     3. Tarik Tunai
@@ -19,7 +19,7 @@ function showMenu() {
 
     rl.question('Pilih opsi (1-4): ', (answer) => {
         if (answer === '1') {
-            checkBalance();
+            checkSaldo();
         } else if (answer === '2') {
             promptDeposit();
         } else if (answer === '3') {
@@ -33,9 +33,10 @@ function showMenu() {
     });
 }
 
-async function checkBalance() {
+async function checkSaldo() {
     try {
-        console.log(`Saldo Anda saat ini: Rp${myAccount.balance}`);
+        const message = await myAccount.checkSaldo();
+        console.log(message);
     } catch (error) {
         console.error('Error saat memeriksa saldo:', error);
     } finally {
@@ -81,7 +82,7 @@ async function promptWithdraw() {
                 const message = await myAccount.withdraw(amount);
                 console.log(message);
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error:', error.message);
             } finally {
                 showMenu();
             }
@@ -90,7 +91,7 @@ async function promptWithdraw() {
 }
 
 function exitBankingSystem() {
-    console.log('Terima kasih telah menggunakan Basic Banking System.');
+    console.log('Terima kasih telah menggunakan Sistem Perbankan Dasar.');
     rl.close();
 }
 

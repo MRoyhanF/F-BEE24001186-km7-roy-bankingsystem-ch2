@@ -1,40 +1,64 @@
 class BankAccount {
-    constructor(accountName) {
-        this.accountName = accountName;
-        this._balance = 0;
-    }
+    #saldo;
 
-    get balance() {
-        return this._balance;
+    constructor(ownerName) {
+        this.ownerName = ownerName;
+        this.#saldo = 0; 
     }
 
     async deposit(amount) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                if (amount > 0) {
-                    this._balance += amount;
-                    resolve(`Deposit berhasil sebesar Rp${amount}. Saldo saat ini: Rp${this._balance}`);
-                } else {
-                    reject('Jumlah deposit harus lebih besar dari 0.');
-                }
-            }, 2000);
-        });
+        try {
+            if (typeof amount !== 'number' || amount <= 0) throw new Error('Jumlah deposit tidak valid');
+            await this.simulateAsyncOperation();
+            this.#saldo += amount;
+            return `Deposit berhasil. Saldo baru: Rp${this.#saldo}`;
+        } catch (error) {
+            throw new Error(`Deposit gagal: ${error.message}`);
+        }
     }
 
     async withdraw(amount) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                if (amount > 0 && amount <= this._balance) {
-                    this._balance -= amount;
-                    resolve(`Penarikan berhasil sebesar Rp${amount}. Saldo saat ini: Rp${this._balance}`);
-                } else if (amount > this._balance) {
-                    reject('Saldo tidak mencukupi untuk penarikan.');
-                } else {
-                    reject('Jumlah penarikan harus lebih besar dari 0.');
-                }
-            }, 2000);
-        });
+        try {
+            if (this.#saldo === 0) {
+                throw new Error('Saldo Anda kosong. Tidak dapat menarik uang.');
+            }
+            if (typeof amount !== 'number' || amount <= 0) throw new Error('Jumlah penarikan tidak valid');
+            if (this.#saldo < amount) throw new Error('Saldo Anda tidak mencukupi.');
+            await this.simulateAsyncOperation();
+            this.#saldo -= amount;
+            return `Penarikan berhasil. Saldo baru: Rp${this.#saldo}`;
+        } catch (error) {
+            throw error; 
+        }
+    }
+
+    async checkSaldo() {
+        return `Saldo saat ini: Rp${this.#saldo}`;
+    }
+
+    async simulateAsyncOperation() {
+        return new Promise(resolve => setTimeout(resolve, 2000));
     }
 }
 
-module.exports = BankAccount;
+class SavingsAccount extends BankAccount {
+    constructor(ownerName, interestRate) {
+        super(ownerName);
+        this.interestRate = interestRate;
+    }
+
+    async withdraw(amount) {
+        try {
+            if (typeof amount !== 'number' || amount <= 0) throw new Error('Jumlah penarikan tidak valid');
+            if (this.interestRate < 0) throw new Error('Tingkat bunga tidak valid');
+            await this.simulateAsyncOperation();
+            const message = await super.withdraw(amount);
+            console.log(`Penarikan dari Rekening Tabungan dengan bunga: ${amount} pada tingkat: ${this.interestRate}%`);
+            return message;
+        } catch (error) {
+            throw error; 
+        }
+    }
+}
+
+module.exports = { BankAccount, SavingsAccount };
