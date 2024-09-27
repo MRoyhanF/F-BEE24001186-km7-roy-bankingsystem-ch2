@@ -1,64 +1,76 @@
 const readline = require('readline');
 const BankAccount = require('./bank_account');
 
-const myAccount = new BankAccount('User');
-
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-function showMenu() {
-    console.log('\n=== Menu Sistem Perbankan ===');
-    console.log('1. Tambah Saldo');
-    console.log('2. Kurangi Saldo');
-    console.log('3. Cek Saldo');
-    console.log('4. Keluar');
-}
+const myAccount = new BankAccount('John Doe');
 
-function getUserChoice() {
-    rl.question('Pilih opsi (1-4): ', async (choice) => {
-        switch (choice) {
-            case '1':
-                const amountToAdd = parseInt(await askQuestion('Masukkan jumlah saldo yang ingin ditambahkan: '), 10);
-                try {
-                    const message = await myAccount.tambahSaldo(amountToAdd);
-                    console.log(message);
-                } catch (error) {
-                    console.error(error);
-                }
-                getUserChoice();
-                break;
-            case '2':
-                const amountToWithdraw = parseInt(await askQuestion('Masukkan jumlah saldo yang ingin dikurangi: '), 10);
-                try {
-                    const message = await myAccount.kurangiSaldo(amountToWithdraw);
-                    console.log(message);
-                } catch (error) {
-                    console.error(error);
-                }
-                getUserChoice();
-                break;
-            case '3':
-                console.log(`Saldo Anda saat ini: ${myAccount.formatRupiah(myAccount.saldo)}`);
-                getUserChoice();
-                break;
-            case '4':
-                console.log('Terima kasih telah menggunakan sistem perbankan. Sampai jumpa!');
-                rl.close();
-                break;
-            default:
-                console.log('Pilihan tidak valid. Silakan pilih 1-4.');
-                getUserChoice();
+function showMenu() {
+    console.log(`
+    === Basic Banking System ===
+    1. Cek Saldo
+    2. Deposit
+    3. Tarik Tunai
+    4. Keluar
+    `);
+
+    rl.question('Pilih opsi (1-4): ', (answer) => {
+        if (answer === '1') {
+            checkSaldo();
+        } else if (answer === '2') {
+            promptDeposit();
+        } else if (answer === '3') {
+            promptWithdraw();
+        } else if (answer === '4') {
+            exitBankingSystem();
+        } else {
+            console.log('Pilihan tidak valid.');
+            showMenu();
         }
     });
 }
 
-function askQuestion(query) {
-    return new Promise(resolve => {
-        rl.question(query, resolve);
+function checkSaldo() {
+    console.log(`Saldo Anda saat ini: Rp${myAccount.saldo}`);
+    showMenu();
+}
+
+function promptDeposit() {
+    rl.question('Masukkan jumlah yang akan dideposit: ', (amount) => {
+        amount = parseInt(amount, 10);
+        myAccount.deposit(amount)
+            .then((message) => {
+                console.log(message);
+                showMenu();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                showMenu();
+            });
     });
 }
 
+function promptWithdraw() {
+    rl.question('Masukkan jumlah yang akan ditarik: ', (amount) => {
+        amount = parseInt(amount, 10);
+        myAccount.withdraw(amount)
+            .then((message) => {
+                console.log(message);
+                showMenu();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                showMenu();
+            });
+    });
+}
+
+function exitBankingSystem() {
+    console.log('Terima kasih telah menggunakan Basic Banking System.');
+    rl.close();
+}
+
 showMenu();
-getUserChoice();
