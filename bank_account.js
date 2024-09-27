@@ -1,19 +1,19 @@
 class BankAccount {
     constructor(accountName) {
         this.accountName = accountName;
-        this._saldo = 0;
+        this._balance = 0;
     }
 
-    get saldo() {
-        return this._saldo;
+    get balance() {
+        return this._balance;
     }
 
-    deposit(amount) {
+    async deposit(amount) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 if (amount > 0) {
-                    this._saldo += amount;
-                    resolve(`Deposit berhasil sebesar Rp${amount}. Saldo saat ini: Rp${this._saldo}`);
+                    this._balance += amount;
+                    resolve(`Deposit berhasil sebesar Rp${amount}. Saldo saat ini: Rp${this._balance}`);
                 } else {
                     reject('Jumlah deposit harus lebih besar dari 0.');
                 }
@@ -21,13 +21,13 @@ class BankAccount {
         });
     }
 
-    withdraw(amount) {
+    async withdraw(amount) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                if (amount > 0 && amount <= this._saldo) {
-                    this._saldo -= amount;
-                    resolve(`Penarikan berhasil sebesar Rp${amount}. Saldo saat ini: Rp${this._saldo}`);
-                } else if (amount > this._saldo) {
+                if (amount > 0 && amount <= this._balance) {
+                    this._balance -= amount;
+                    resolve(`Penarikan berhasil sebesar Rp${amount}. Saldo saat ini: Rp${this._balance}`);
+                } else if (amount > this._balance) {
                     reject('Saldo tidak mencukupi untuk penarikan.');
                 } else {
                     reject('Jumlah penarikan harus lebih besar dari 0.');
