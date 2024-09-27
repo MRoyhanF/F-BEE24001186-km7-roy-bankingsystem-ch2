@@ -6,7 +6,7 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-const myAccount = new BankAccount('John Doe');
+const myAccount = new BankAccount('Muhamad Royhan Fadhli');
 
 function showMenu() {
     console.log(`
