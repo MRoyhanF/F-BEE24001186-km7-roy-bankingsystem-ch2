@@ -2,8 +2,12 @@
 
 ### Muhamad Royhan Fadhli
 
-For Runing The Program
+### For Runing The Program
 
 ```
 node banking_system.js
 ```
+
+### FlowChart
+
+<img src="./img/flowcart.jpg">
