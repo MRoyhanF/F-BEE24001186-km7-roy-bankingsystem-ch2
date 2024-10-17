@@ -1,35 +1,30 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
-
 export class PostService {
-  // Mendapatkan semua post
+  constructor() {
+    this.prisma = new PrismaClient();
+  }
+
   async getAllPosts() {
-    return prisma.post.findMany();
+    return this.prisma.post.findMany();
   }
 
-  // Mendapatkan post berdasarkan ID
   async getPostById(id) {
-    return prisma.post.findUnique({ where: { id } });
+    return this.prisma.post.findUnique({ where: { id: parseInt(id) } });
   }
 
-  // Membuat post baru
-  async createPost(title, content, authorId) {
-    return prisma.post.create({
-      data: { title, content, authorId },
-    });
+  async createPost(data) {
+    return this.prisma.post.create({ data });
   }
 
-  // Update post
   async updatePost(id, data) {
-    return prisma.post.update({
-      where: { id },
+    return this.prisma.post.update({
+      where: { id: parseInt(id) },
       data,
     });
   }
 
-  // Hapus post
   async deletePost(id) {
-    return prisma.post.delete({ where: { id } });
+    return this.prisma.post.delete({ where: { id: parseInt(id) } });
   }
 }

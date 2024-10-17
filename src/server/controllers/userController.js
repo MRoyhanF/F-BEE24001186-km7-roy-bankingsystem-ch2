@@ -1,59 +1,59 @@
 import { UserService } from "../services/userService.js";
+import jwt from "jsonwebtoken";
+import { hashPassword, verifyPassword } from "../utils/hash.js";
+import { ErrorHandler } from "../middlewares/errorHandler.js";
 
-const userService = new UserService();
-
-// Register user
-export const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
-  try {
-    const user = await userService.register(name, email, password);
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+class UserController {
+  constructor() {
+    this.userService = new UserService();
   }
-};
 
-// Login user
-export const loginUser = async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const { token, user } = await userService.login(email, password);
-    res.status(200).json({ token, user });
-  } catch (error) {
-    res.status(401).json({ message: error.message });
+  async getAllUsers(req, res, next) {
+    try {
+      const users = await this.userService.getAllUsers();
+      res.status(200).json(users);
+    } catch (error) {
+      next(new ErrorHandler(500, error.message));
+    }
   }
-};
 
-// CRUD operations for User
-export const getUserById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const user = await userService.getUserById(id);
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(404).json({ message: "User not found" });
+  async getUserById(req, res, next) {
+    try {
+      const user = await this.userService.getUserById(req.params.id);
+      if (!user) throw new ErrorHandler(404, "User not found");
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
   }
-};
 
-// Update user
-export const updateUser = async (req, res) => {
-  const { id } = req.params;
-  const { name, email, password } = req.body;
-  try {
-    const updatedUser = await userService.updateUser(id, { name, email, password });
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  async createUser(req, res, next) {
+    try {
+      const hashedPassword = await hashPassword(req.body.password);
+      const newUser = await this.userService.createUser({
+        ...req.body,
+        password: hashedPassword,
+      });
+      res.status(201).json(newUser);
+    } catch (error) {
+      next(new ErrorHandler(500, error.message));
+    }
   }
-};
 
-// Delete user
-export const deleteUser = async (req, res) => {
-  const { id } = req.params;
-  try {
-    await userService.deleteUser(id);
-    res.status(204).json({ message: "User deleted" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  async loginUser(req, res, next) {
+    try {
+      const user = await this.userService.getUserByEmail(req.body.email);
+      if (!user) throw new ErrorHandler(404, "User not found");
+
+      const isPasswordValid = await verifyPassword(req.body.password, user.password);
+      if (!isPasswordValid) throw new ErrorHandler(401, "Invalid credentials");
+
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      res.status(200).json({ token });
+    } catch (error) {
+      next(error);
+    }
   }
-};
+}
+
+export default new UserController();

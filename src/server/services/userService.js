@@ -1,54 +1,34 @@
 import { PrismaClient } from "@prisma/client";
-import { hashPassword, verifyPassword } from "../utils/hash.js";
-import jwt from "jsonwebtoken";
-
-const prisma = new PrismaClient();
 
 export class UserService {
-  // Membuat user baru
-  async register(name, email, password) {
-    const hashedPassword = await hashPassword(password);
-    return prisma.user.create({
-      data: { name, email, password: hashedPassword },
-    });
+  constructor() {
+    this.prisma = new PrismaClient();
   }
 
-  // Mendapatkan user berdasarkan ID
+  async getAllUsers() {
+    return this.prisma.user.findMany();
+  }
+
   async getUserById(id) {
-    return prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({ where: { id: parseInt(id) } });
   }
 
-  // Mendapatkan user berdasarkan email (untuk login)
-  async getUserByEmail(email) {
-    return prisma.user.findUnique({ where: { email } });
+  async createUser(data) {
+    return this.prisma.user.create({ data });
   }
 
-  // Update user
   async updateUser(id, data) {
-    return prisma.user.update({
-      where: { id },
+    return this.prisma.user.update({
+      where: { id: parseInt(id) },
       data,
     });
   }
 
-  // Hapus user
   async deleteUser(id) {
-    return prisma.user.delete({ where: { id } });
+    return this.prisma.user.delete({ where: { id: parseInt(id) } });
   }
 
-  // Login user
-  async login(email, password) {
-    const user = await this.getUserByEmail(email);
-    if (!user) {
-      throw new Error("User not found");
-    }
-    const isPasswordValid = await verifyPassword(password, user.password);
-    if (!isPasswordValid) {
-      throw new Error("Invalid credentials");
-    }
-
-    // Generate JWT Token
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    return { token, user };
+  async getUserByEmail(email) {
+    return this.prisma.user.findUnique({ where: { email } });
   }
 }
