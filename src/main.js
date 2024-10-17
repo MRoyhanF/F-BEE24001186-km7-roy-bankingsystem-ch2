@@ -1,11 +1,23 @@
-import express from "express";
-const app = express();
-const port = 3000;
+import "dotenv/config";
+import http from "http";
+import app from "./server/server.js";
+import listEndpoints from "express-list-endpoints";
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+const port = process.env.PORT || 3000;
+const server = http.createServer(app);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+const start = async () => {
+  try {
+    console.log("=====================================================");
+    listEndpoints(app).forEach((route) => {
+      route.methods.forEach((method) => {
+        console.log(`[ROUTE] : ${method} ${route.path}`);
+      });
+    });
+    console.log("=====================================================");
+  } catch (error) {
+    console.log(`⚠️ [ERROR], ${error}`);
+  }
+};
+
+start();
