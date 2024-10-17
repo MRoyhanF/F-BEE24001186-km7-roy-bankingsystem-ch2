@@ -6,7 +6,11 @@ export class UserService {
   }
 
   async getAllUsers() {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({
+      include: {
+        profile: true,
+      },
+    });
   }
 
   async getUserById(id) {

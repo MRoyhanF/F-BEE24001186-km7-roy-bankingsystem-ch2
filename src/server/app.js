@@ -13,7 +13,7 @@ app.set("view engine", "ejs");
 
 // API Routes
 app.use("/api/users", userRoutes);
-app.use("/api/posts", postRoutes);
+// app.use("/api/posts", postRoutes);
 
 // Web Routes
 app.get("/", (req, res) => {

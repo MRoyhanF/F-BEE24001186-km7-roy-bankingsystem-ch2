@@ -27,7 +27,7 @@ model User {
 model bank_account {
   id                      Int           @id @default(autoincrement())
   bank_name               String
-  bank_account_number      Int
+  bank_account_number     Int  
   balance                 Int
   user                    User?         @relation(fields: [user_id], references: [id])
   user_id                 Int
@@ -41,5 +41,6 @@ model transaction {
   destination_account   bank_account? @relation("destinationAccount", fields: [destination_account_id], references: [id])
   source_account_id     Int
   destination_account_id Int
+  amount                Int
 }
 
