@@ -15,11 +15,6 @@ app.set("view engine", "ejs");
 app.use("/api/users", userRoutes);
 // app.use("/api/posts", postRoutes);
 
-// Web Routes
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
 // Routes Not Found
 app.use(handleError);
 

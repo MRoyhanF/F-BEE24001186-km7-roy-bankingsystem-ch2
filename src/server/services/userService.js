@@ -14,7 +14,10 @@ export class UserService {
   }
 
   async getUserById(id) {
-    return this.prisma.user.findUnique({ where: { id: parseInt(id) } });
+    return this.prisma.user.findUnique({
+      where: { id: parseInt(id) },
+      include: { profile: true },
+    });
   }
 
   async createUser(data) {
@@ -30,9 +33,5 @@ export class UserService {
 
   async deleteUser(id) {
     return this.prisma.user.delete({ where: { id: parseInt(id) } });
-  }
-
-  async getUserByEmail(email) {
-    return this.prisma.user.findUnique({ where: { email } });
   }
 }
