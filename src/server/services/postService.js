@@ -14,7 +14,7 @@ export class PostService {
   }
 
   async createPost(data) {
-    return this.prisma.post.create({ data });
+    return this.prisma.post.create(data);
   }
 
   async updatePost(id, data) {

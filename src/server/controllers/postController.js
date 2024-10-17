@@ -6,7 +6,6 @@ class PostController {
     this.postService = new PostService();
   }
 
-  // Mendapatkan semua post
   async getAllPosts(req, res, next) {
     try {
       const posts = await this.postService.getAllPosts();
@@ -16,7 +15,6 @@ class PostController {
     }
   }
 
-  // Mendapatkan post berdasarkan ID
   async getPostById(req, res, next) {
     try {
       const post = await this.postService.getPostById(req.params.id);
@@ -27,17 +25,16 @@ class PostController {
     }
   }
 
-  // Membuat post baru
   async createPost(req, res, next) {
     try {
-      const newPost = await this.postService.createPost(req.body);
+      const { title, content } = req.body;
+      const newPost = await this.postService.createPost({ ...req.body, published: false });
       res.status(201).json(newPost);
     } catch (error) {
       next(new ErrorHandler(500, error.message));
     }
   }
 
-  // Memperbarui post berdasarkan ID
   async updatePost(req, res, next) {
     try {
       const updatedPost = await this.postService.updatePost(req.params.id, req.body);
@@ -48,7 +45,6 @@ class PostController {
     }
   }
 
-  // Menghapus post berdasarkan ID
   async deletePost(req, res, next) {
     try {
       const deletedPost = await this.postService.deletePost(req.params.id);
