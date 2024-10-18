@@ -8,6 +8,13 @@ export class AccountValidation {
     user_id: Joi.number().required(),
   });
 
+  static updateAccountSchema = Joi.object({
+    bank_name: Joi.string(),
+    bank_account_number: Joi.number(),
+    balance: Joi.number(),
+    user_id: Joi.number(),
+  });
+
   static validate(schema, data) {
     const { error } = schema.validate(data);
     if (error) {

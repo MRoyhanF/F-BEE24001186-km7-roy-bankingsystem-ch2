@@ -21,6 +21,7 @@ export class AccountService {
       },
     });
   }
+
   async getAccountByUser(user_id) {
     return this.prisma.bank_account.findFirst({
       where: {
