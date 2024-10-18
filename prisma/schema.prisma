@@ -11,6 +11,7 @@ model profiles {
   id        Int      @id @default(autoincrement())
   identity_type      String
   identity_number     String
+  address             String
   user      users?    @relation(fields: [user_id], references: [id])
   user_id   Int
 }

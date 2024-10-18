@@ -16,6 +16,7 @@ async function main() {
           create: {
             identity_type: faker.helpers.arrayElement(["KTP", "SIM", "Passport"]),
             identity_number: faker.string.numeric(9),
+            address: faker.address.streetAddress(true),
           },
         },
         bank_account: {
