@@ -105,7 +105,6 @@ class TransactionController {
 
       res.status(200).json({ Status: "Success", Message: "Deposit Success", Data: accountStatus });
     } catch (error) {
-      // Tangani error
       next(new ErrorHandler(500, error.message));
     }
   }
