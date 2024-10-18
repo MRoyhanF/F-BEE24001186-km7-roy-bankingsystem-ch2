@@ -51,15 +51,15 @@ class UserController {
     }
   }
 
-  async deleteUser(req, res, next) {
-    try {
-      const deletedUser = await this.userService.deleteUser(req.params.id);
-      if (!deletedUser) throw new ErrorHandler(404, "User not found");
-      res.status(200).json({ status: "Success", message: "User deleted successfully" });
-    } catch (error) {
-      next(new ErrorHandler(500, error.message));
-    }
-  }
+  // async deleteUser(req, res, next) {
+  //   try {
+  //     const deletedUser = await this.userService.deleteUser(req.params.id);
+  //     if (!deletedUser) throw new ErrorHandler(404, "User not found");
+  //     res.status(200).json({ status: "Success", message: "User deleted successfully" });
+  //   } catch (error) {
+  //     next(new ErrorHandler(500, error.message));
+  //   }
+  // }
 }
 
 export default new UserController();

@@ -6,7 +6,7 @@ export class TransactionSevice {
   }
 
   async getAllTransaction() {
-    const transactions = await this.prisma.transaction.findMany({
+    const transactions = await this.prisma.transactions.findMany({
       include: {
         source_account: {
           include: {
@@ -46,7 +46,7 @@ export class TransactionSevice {
   }
 
   async getTransactionById(id) {
-    const transaction = await this.prisma.transaction.findUnique({
+    const transaction = await this.prisma.transactions.findUnique({
       where: { id: parseInt(id) },
       include: {
         source_account: {
@@ -89,7 +89,7 @@ export class TransactionSevice {
   }
 
   async createTransaction(data) {
-    return this.prisma.transaction.create({
+    return this.prisma.transactions.create({
       data: {
         amount: data.amount,
         source_account: {
@@ -107,7 +107,7 @@ export class TransactionSevice {
   }
 
   async deleteTransaction(id) {
-    return this.prisma.transaction.delete({
+    return this.prisma.transactions.delete({
       where: { id: parseInt(id) },
     });
   }

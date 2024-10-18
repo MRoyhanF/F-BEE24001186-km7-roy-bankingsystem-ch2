@@ -7,7 +7,7 @@ async function main() {
   const users = [];
 
   for (let i = 0; i < 10; i++) {
-    const user = await prisma.user.create({
+    const user = await prisma.users.create({
       data: {
         name: faker.person.firstName(),
         email: faker.internet.email(),
@@ -15,13 +15,14 @@ async function main() {
         profile: {
           create: {
             identity_type: faker.helpers.arrayElement(["KTP", "SIM", "Passport"]),
-            identity_number: parseInt(faker.string.numeric(9)),
+            identity_number: faker.string.numeric(9),
+            address: faker.address.streetAddress(true),
           },
         },
         bank_account: {
           create: {
             bank_name: faker.company.name(),
-            bank_account_number: parseInt(faker.string.numeric(9)),
+            bank_account_number: faker.string.numeric(9),
             balance: parseInt(faker.finance.amount(1000, 5000, 0)),
           },
         },
@@ -48,7 +49,7 @@ async function main() {
 
       const amount = parseInt(faker.finance.amount(100, 1000, 0));
 
-      const transaction = await prisma.transaction.create({
+      const transaction = await prisma.transactions.create({
         data: {
           source_account_id: sourceAccount.id,
           destination_account_id: destinationAccount.id,
