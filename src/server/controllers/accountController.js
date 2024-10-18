@@ -65,6 +65,18 @@ class AccountController {
       next(new ErrorHandler(500, error.message));
     }
   }
+
+  async deleteAccount(req, res, next) {
+    try {
+      const account = await this.accountService.getAccountById(req.params.id);
+      if (!account) throw new ErrorHandler(404, "Account Not Found");
+
+      await this.accountService.deleteAccount(req.params.id);
+      res.status(200).json({ Status: "Success", Message: "Account Deleted Successfully" });
+    } catch (error) {
+      next(new ErrorHandler(500, error.message));
+    }
+  }
 }
 
 export default new AccountController();
