@@ -71,6 +71,25 @@ class TransactionController {
       next(new ErrorHandler(500, error.message));
     }
   }
+
+  async withdrawTransaction(req, res, next) {
+    try {
+      TransactionValidation.validate(TransactionValidation.transactionSchema, req.body);
+
+      const account = await this.accountService.getAccountById(req.params.id);
+      if (!account) throw new ErrorHandler(404, "Account Not Found");
+
+      if (account.balance < req.body.amount) {
+        throw new ErrorHandler(400, "Insufficient Balance");
+      }
+
+      await this.transactionService.withdrawTransaction(account.id, req.body.amount);
+
+      res.status(200).json({ Status: "Success", Message: "Withdrawal Success" });
+    } catch (error) {
+      next(new ErrorHandler(500, error.message));
+    }
+  }
 }
 
 export default new TransactionController();

@@ -111,4 +111,21 @@ export class TransactionSevice {
       where: { id: parseInt(id) },
     });
   }
+
+  async withdrawTransaction(id, amount) {
+    const account = await this.prisma.bank_accounts.findUnique({
+      where: { id: id },
+    });
+
+    if (!account) throw new Error("Account not found");
+
+    if (account.balance < amount) throw new Error("Insufficient balance");
+
+    const newBalance = account.balance - amount;
+
+    return this.prisma.bank_accounts.update({
+      where: { id: id },
+      data: { balance: newBalance },
+    });
+  }
 }

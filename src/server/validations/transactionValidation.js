@@ -7,6 +7,10 @@ export class TransactionValidation {
     amount: Joi.number().required(),
   });
 
+  static transactionSchema = Joi.object({
+    amount: Joi.number().required(),
+  });
+
   static validate(schema, data) {
     const { error } = schema.validate(data);
     if (error) {

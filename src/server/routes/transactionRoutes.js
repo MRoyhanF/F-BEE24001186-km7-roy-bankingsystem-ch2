@@ -8,4 +8,6 @@ router.get("/:id", TransactionController.getTransactionById.bind(TransactionCont
 router.post("/", TransactionController.createTransaction.bind(TransactionController));
 router.delete("/:id", TransactionController.deleteTransaction.bind(TransactionController));
 
+router.put("/withdraw/:id", TransactionController.withdrawTransaction.bind(TransactionController));
+
 export default router;
