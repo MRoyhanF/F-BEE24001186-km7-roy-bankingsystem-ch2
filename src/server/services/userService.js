@@ -6,7 +6,7 @@ export class UserService {
   }
 
   async getAllUsers() {
-    return this.prisma.user.findMany({
+    return this.prisma.users.findMany({
       include: {
         profile: true,
       },
@@ -14,21 +14,21 @@ export class UserService {
   }
 
   async getUserById(id) {
-    return this.prisma.user.findUnique({
+    return this.prisma.users.findUnique({
       where: { id: parseInt(id) },
       include: { profile: true },
     });
   }
 
   async getUserByEmail(email) {
-    return this.prisma.user.findUnique({
+    return this.prisma.users.findUnique({
       where: { email },
     });
   }
 
   async createUser(data) {
     const { profile, ...userData } = data;
-    return this.prisma.user.create({
+    return this.prisma.users.create({
       data: {
         ...userData,
         profile: {
@@ -45,7 +45,7 @@ export class UserService {
     const { profile, ...userData } = data;
     const userId = parseInt(id);
 
-    const updatedUser = await this.prisma.user.update({
+    const updatedUser = await this.prisma.users.update({
       where: { id: userId },
       data: userData,
       include: {
@@ -61,7 +61,7 @@ export class UserService {
   }
 
   async updateProfile(userId, data) {
-    const userProfile = await this.prisma.profile.findFirst({
+    const userProfile = await this.prisma.profiles.findFirst({
       where: { user_id: userId },
     });
 
@@ -69,28 +69,32 @@ export class UserService {
       throw new Error("Profile not found");
     }
 
-    return this.prisma.profile.update({
+    return this.prisma.profiles.update({
       where: { id: userProfile.id },
       data,
     });
   }
 
-  async deleteUser(id) {
-    const userId = parseInt(id);
+  // async deleteUser(id) {
+  //   const userId = parseInt(id);
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      include: { profile: true },
-    });
+  //   const user = await this.prisma.users.findUnique({
+  //     where: { id: userId },
+  //     include: { profile: true },
+  //   });
 
-    if (!user) throw new Error("User not found");
+  //   if (!user) throw new Error("User not found");
 
-    await this.prisma.profile.delete({
-      where: { id: user.profile[0].id },
-    });
+  //   await this.prisma.profiles.delete({
+  //     where: { id: user.profile[0].id },
+  //   });
 
-    return this.prisma.user.delete({
-      where: { id: userId },
-    });
-  }
+  //   await this.prisma.bank_accounts.deleteMany({
+  //     where: { user_id: userId },
+  //   });
+
+  //   return this.prisma.users.delete({
+  //     where: { id: userId },
+  //   });
+  // }
 }
