@@ -16,6 +16,16 @@ class TransactionController {
       next(new ErrorHandler(500, error.message));
     }
   }
+
+  async getTransactionById(req, res, next) {
+    try {
+      const transaction = await this.transactionService.getTransactionById(req.params.id);
+      if (!transaction) throw new ErrorHandler(404, "Transaction Not Found");
+      res.status(200).json({ Status: "Success", Data: transaction });
+    } catch (error) {
+      next(new ErrorHandler(500, error.message));
+    }
+  }
 }
 
 export default new TransactionController();
