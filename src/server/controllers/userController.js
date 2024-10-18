@@ -29,6 +29,10 @@ class UserController {
   async createUser(req, res, next) {
     try {
       UserValidation.validate(UserValidation.createUserSchema, req.body);
+
+      const validEmail = await this.userService.getUserByEmail(req.body.email);
+      if (validEmail) throw new ErrorHandler(400, "Email already exists");
+
       const newUser = await this.userService.createUser(req.body);
       res.status(201).json({ status: "Success", data: newUser });
     } catch (error) {

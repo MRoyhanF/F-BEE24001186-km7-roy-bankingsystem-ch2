@@ -14,7 +14,7 @@ app.set("view engine", "ejs");
 
 // API Routes
 app.use("/api/users", userRoutes);
-app.use("/api/account", accountRoutes);
+app.use("/api/accounts", accountRoutes);
 // app.use("/api/posts", postRoutes);
 
 // Routes Not Found

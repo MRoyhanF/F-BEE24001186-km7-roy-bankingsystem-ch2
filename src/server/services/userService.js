@@ -20,13 +20,19 @@ export class UserService {
     });
   }
 
+  async getUserByEmail(email) {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
   async createUser(data) {
-    const { profile, ...userData } = data; // Ekstrak data profil
+    const { profile, ...userData } = data;
     return this.prisma.user.create({
       data: {
         ...userData,
         profile: {
-          create: profile, // Buat profil baru
+          create: profile,
         },
       },
       include: {
@@ -36,30 +42,27 @@ export class UserService {
   }
 
   async updateUser(id, data) {
-    const { profile, ...userData } = data; // Extract profile data
+    const { profile, ...userData } = data;
     const userId = parseInt(id);
 
-    // First, update user data
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
-      data: userData, // Update user without profile
+      data: userData,
       include: {
         profile: true,
       },
     });
 
-    // If profile data is provided, update the profile
     if (profile) {
-      await this.updateProfile(userId, profile); // Call method to update profile
+      await this.updateProfile(userId, profile);
     }
 
-    return updatedUser; // Return updated user
+    return updatedUser;
   }
 
   async updateProfile(userId, data) {
-    // Fetch the user's profile based on user_id
     const userProfile = await this.prisma.profile.findFirst({
-      where: { user_id: userId }, // Use findFirst to get the profile
+      where: { user_id: userId },
     });
 
     if (!userProfile) {
@@ -67,7 +70,7 @@ export class UserService {
     }
 
     return this.prisma.profile.update({
-      where: { id: userProfile.id }, // Update using the profile's unique id
+      where: { id: userProfile.id },
       data,
     });
   }
