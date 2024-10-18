@@ -9,5 +9,6 @@ router.post("/", TransactionController.createTransaction.bind(TransactionControl
 router.delete("/:id", TransactionController.deleteTransaction.bind(TransactionController));
 
 router.put("/withdraw/:id", TransactionController.withdrawTransaction.bind(TransactionController));
+router.put("/deposit/:id", TransactionController.depositTransaction.bind(TransactionController));
 
 export default router;

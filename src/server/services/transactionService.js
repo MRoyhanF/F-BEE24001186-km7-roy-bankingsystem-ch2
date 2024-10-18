@@ -128,4 +128,19 @@ export class TransactionSevice {
       data: { balance: newBalance },
     });
   }
+
+  async deposit(accountId, amount) {
+    const account = await this.prisma.bank_accounts.findUnique({
+      where: { id: accountId },
+    });
+
+    if (!account) throw new Error("Account not found");
+
+    const newBalance = account.balance + amount;
+
+    return this.prisma.bank_accounts.update({
+      where: { id: accountId },
+      data: { balance: newBalance },
+    });
+  }
 }

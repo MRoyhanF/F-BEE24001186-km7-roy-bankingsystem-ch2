@@ -84,9 +84,28 @@ class TransactionController {
       }
 
       await this.transactionService.withdrawTransaction(account.id, req.body.amount);
+      const accountStatus = await this.accountService.getAccountById(account.id);
 
-      res.status(200).json({ Status: "Success", Message: "Withdrawal Success" });
+      res.status(200).json({ Status: "Success", Message: "Withdrawal Success", Data: accountStatus });
     } catch (error) {
+      next(new ErrorHandler(500, error.message));
+    }
+  }
+
+  async depositTransaction(req, res, next) {
+    try {
+      TransactionValidation.validate(TransactionValidation.transactionSchema, req.body);
+
+      const account = await this.accountService.getAccountById(req.params.id);
+      if (!account) throw new ErrorHandler(404, "Account Not Found");
+
+      await this.transactionService.deposit(account.id, req.body.amount);
+
+      const accountStatus = await this.accountService.getAccountById(account.id);
+
+      res.status(200).json({ Status: "Success", Message: "Deposit Success", Data: accountStatus });
+    } catch (error) {
+      // Tangani error
       next(new ErrorHandler(500, error.message));
     }
   }
