@@ -2,22 +2,24 @@ import Joi from "joi";
 
 export class UserValidation {
   static createUserSchema = Joi.object({
-    name: Joi.string().required(),
+    name: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
-    password: Joi.string().required(),
+    password: Joi.string().min(6).required(),
     profile: Joi.object({
-      identity_type: Joi.string().required(),
-      identity_number: Joi.number().required(),
+      identity_type: Joi.string().valid("KTP", "SIM", "Passport").required(),
+      identity_number: Joi.string().min(16).required(),
+      address: Joi.string().min(3).required(),
     }).required(),
   });
 
   static updateUserSchema = Joi.object({
-    name: Joi.string(),
+    name: Joi.string().min(3),
     email: Joi.string().email(),
-    password: Joi.string(),
+    password: Joi.string().min(6),
     profile: Joi.object({
-      identity_type: Joi.string(),
-      identity_number: Joi.number(),
+      identity_type: Joi.string().valid("KTP", "SIM", "Passport"),
+      identity_number: Joi.string().min(16),
+      address: Joi.string().min(3),
     }),
   });
 
