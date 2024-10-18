@@ -59,6 +59,18 @@ class TransactionController {
       next(new ErrorHandler(500, error.message));
     }
   }
+
+  async deleteTransaction(req, res, next) {
+    try {
+      const transaction = await this.transactionService.getTransactionById(req.params.id);
+      if (!transaction) throw new ErrorHandler(404, "Transaction Not Found");
+
+      await this.transactionService.deleteTransaction(req.params.id);
+      res.status(200).json({ Status: "Success", Message: "Transaction Deleted Successfully" });
+    } catch (error) {
+      next(new ErrorHandler(500, error.message));
+    }
+  }
 }
 
 export default new TransactionController();

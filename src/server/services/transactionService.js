@@ -106,14 +106,7 @@ export class TransactionSevice {
     });
   }
 
-  async updateAccount(id, data) {
-    return this.prisma.transaction.update({
-      where: { id: parseInt(id) },
-      data,
-    });
-  }
-
-  async deleteAccount(id) {
+  async deleteTransaction(id) {
     return this.prisma.transaction.delete({
       where: { id: parseInt(id) },
     });
