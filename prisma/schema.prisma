@@ -7,38 +7,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model profile {
+model profiles {
   id        Int      @id @default(autoincrement())
   identity_type      String
   identity_number     Int
-  user      User?    @relation(fields: [user_id], references: [id])
+  user      users?    @relation(fields: [user_id], references: [id])
   user_id   Int
 }
 
-model User {
+model users {
   id        Int      @id @default(autoincrement())
   name      String
   email     String   @unique
   password  String
-  profile   profile[]
-  bank_account bank_account[]
+  profile   profiles[]
+  bank_account bank_accounts[]
 }
 
-model bank_account {
+model bank_accounts {
   id                      Int           @id @default(autoincrement())
   bank_name               String
   bank_account_number     Int  
-  balance                 Int
-  user                    User?         @relation(fields: [user_id], references: [id])
+  balance                 BigInt
+  user                    users?         @relation(fields: [user_id], references: [id])
   user_id                 Int
-  outgoing_transactions   transaction[] @relation("sourceAccount")
-  incoming_transactions   transaction[] @relation("destinationAccount")
+  outgoing_transactions   transactions[] @relation("sourceAccount")
+  incoming_transactions   transactions[] @relation("destinationAccount")
 }
 
-model transaction {
+model transactions {
   id                    Int           @id @default(autoincrement())
-  source_account        bank_account? @relation("sourceAccount", fields: [source_account_id], references: [id])
-  destination_account   bank_account? @relation("destinationAccount", fields: [destination_account_id], references: [id])
+  source_account        bank_accounts? @relation("sourceAccount", fields: [source_account_id], references: [id])
+  destination_account   bank_accounts? @relation("destinationAccount", fields: [destination_account_id], references: [id])
   source_account_id     Int
   destination_account_id Int
   amount                Int
