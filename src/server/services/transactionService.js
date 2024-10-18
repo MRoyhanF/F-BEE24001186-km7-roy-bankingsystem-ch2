@@ -88,8 +88,22 @@ export class TransactionSevice {
     return customOutput;
   }
 
-  async createAccount(data) {
-    return this.prisma.transaction.create(data);
+  async createTransaction(data) {
+    return this.prisma.transaction.create({
+      data: {
+        amount: data.amount,
+        source_account: {
+          connect: {
+            id: data.source_account_id,
+          },
+        },
+        destination_account: {
+          connect: {
+            id: data.destination_account_id,
+          },
+        },
+      },
+    });
   }
 
   async updateAccount(id, data) {
