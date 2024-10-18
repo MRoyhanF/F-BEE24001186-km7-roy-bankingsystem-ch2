@@ -15,13 +15,13 @@ async function main() {
         profile: {
           create: {
             identity_type: faker.helpers.arrayElement(["KTP", "SIM", "Passport"]),
-            identity_number: parseInt(faker.string.numeric(9)),
+            identity_number: faker.string.numeric(9),
           },
         },
         bank_account: {
           create: {
             bank_name: faker.company.name(),
-            bank_account_number: parseInt(faker.string.numeric(9)),
+            bank_account_number: faker.string.numeric(9),
             balance: parseInt(faker.finance.amount(1000, 5000, 0)),
           },
         },

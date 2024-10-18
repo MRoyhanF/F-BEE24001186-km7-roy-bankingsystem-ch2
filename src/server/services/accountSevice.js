@@ -6,7 +6,7 @@ export class AccountService {
   }
 
   async getAllAccount() {
-    return this.prisma.bank_account.findMany({
+    return this.prisma.bank_accounts.findMany({
       include: {
         user: true,
       },
@@ -14,7 +14,7 @@ export class AccountService {
   }
 
   async getAccountById(id) {
-    return this.prisma.bank_account.findUnique({
+    return this.prisma.bank_accounts.findUnique({
       where: { id: parseInt(id) },
       include: {
         user: true,
@@ -23,7 +23,7 @@ export class AccountService {
   }
 
   async getAccountByUser(user_id) {
-    return this.prisma.bank_account.findFirst({
+    return this.prisma.bank_accounts.findFirst({
       where: {
         user_id: user_id,
       },
@@ -31,7 +31,7 @@ export class AccountService {
   }
 
   async createAccount(data) {
-    return this.prisma.bank_account.create({
+    return this.prisma.bank_accounts.create({
       data: {
         bank_name: data.bank_name,
         bank_account_number: data.bank_account_number,
@@ -46,14 +46,14 @@ export class AccountService {
   }
 
   async updateAccount(id, data) {
-    return this.prisma.bank_account.update({
+    return this.prisma.bank_accounts.update({
       where: { id: parseInt(id) },
       data,
     });
   }
 
   async deleteAccount(id) {
-    return this.prisma.bank_account.delete({
+    return this.prisma.bank_accounts.delete({
       where: { id: parseInt(id) },
     });
   }

@@ -10,7 +10,7 @@ datasource db {
 model profiles {
   id        Int      @id @default(autoincrement())
   identity_type      String
-  identity_number     Int
+  identity_number     String
   user      users?    @relation(fields: [user_id], references: [id])
   user_id   Int
 }
@@ -27,8 +27,8 @@ model users {
 model bank_accounts {
   id                      Int           @id @default(autoincrement())
   bank_name               String
-  bank_account_number     Int  
-  balance                 BigInt
+  bank_account_number     String  
+  balance                 Float
   user                    users?         @relation(fields: [user_id], references: [id])
   user_id                 Int
   outgoing_transactions   transactions[] @relation("sourceAccount")
