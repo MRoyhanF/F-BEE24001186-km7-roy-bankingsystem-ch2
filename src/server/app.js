@@ -3,6 +3,7 @@ import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./routes/swagger.json" assert { type: "json" };
 
+import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import accountRoutes from "./routes/accountRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
@@ -20,6 +21,7 @@ app.set("view engine", "ejs");
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // API Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionRoutes);
