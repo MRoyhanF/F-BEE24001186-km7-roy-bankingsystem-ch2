@@ -1,0 +1,336 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "3.0.3",
+    "title": "Banking  API",
+    "description": "API documentation for banking system",
+    "contact": {
+      "name": "Royhan",
+      "email": "froyhan0@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "tags": [
+    {
+      "name": "User",
+      "description": "User management"
+    },
+    {
+      "name": "Account",
+      "description": "Account management"
+    },
+    {
+      "name": "Transaction",
+      "description": "Transaction management"
+    }
+  ],
+  "paths": {
+    "/api/users": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get all users",
+        "description": "Get all users",
+        "responses": {
+          "200": {
+            "description": "List of accounts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      },
+      "post": {
+        "tags": ["User"],
+        "summary": "Create user",
+        "description": "Create user",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/User"
+        },
+        "responses": {
+          "201": {
+            "description": "Account created successfully"
+          },
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get user by ID",
+        "description": "Get user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["User"],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "tags": ["User"],
+        "summary": "Delete user by ID",
+        "description": "Delete user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    },
+    "/withdraw/{id}": {
+      "put": {
+        "tags": ["Transaction"],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Account ID"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/deposit/{id}": {
+      "put": {
+        "tags": ["Transaction"],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Account ID"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "joko@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "Royhan Ganteng"
+          },
+          "profile": {
+            "type": "object",
+            "$ref": "#/components/schemas/Profile"
+          }
+        }
+      },
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "identity_type": {
+            "type": "string",
+            "example": "3789478932"
+          },
+          "identity_number": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "address": {
+            "type": "string",
+            "example": "Jl. Jendral Sudirman"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "xml": {
+          "name": "Profile"
+        }
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "bank_name": {
+            "type": "string",
+            "example": "BCA"
+          },
+          "bank_account_number": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "balance": {
+            "type": "number",
+            "example": 1500
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "xml": {
+          "name": "Account"
+        }
+      },
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "amount": {
+            "type": "number",
+            "example": 500
+          },
+          "source_account_id": {
+            "$ref": "#/components/schemas/Account"
+          },
+          "destination_account_id": {
+            "$ref": "#/components/schemas/Account"
+          }
+        },
+        "xml": {
+          "name": "Transaction"
+        }
+      }
+    },
+    "requestBodies": {
+      "User": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "Profile": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Profile"
+            }
+          }
+        }
+      },
+      "Account": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Account"
+            }
+          }
+        }
+      },
+      "Transaction": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Transaction"
+            }
+          }
+        }
+      }
+    }
+  }
+}
