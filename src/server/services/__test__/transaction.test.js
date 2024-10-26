@@ -158,6 +158,10 @@ jest.mock("@prisma/client", () => ({
       create: jest.fn(),
       delete: jest.fn(),
     },
+    bank_accounts: {
+      findUnique: jest.fn(),
+      update: jest.fn(),
+    },
   })),
 }));
 
@@ -410,6 +414,74 @@ describe("TransactionService", () => {
       expect(transactionService.prisma.transactions.delete).toHaveBeenCalledWith({
         where: { id: 1 },
       });
+    });
+  });
+
+  describe("withdrawTransaction", () => {
+    it("should withdraw an amount from an account", async () => {
+      const account = {
+        id: 1,
+        balance: 1000000,
+      };
+
+      transactionService.prisma.bank_accounts.findUnique.mockResolvedValue(account);
+      transactionService.prisma.bank_accounts.update.mockResolvedValue(account);
+      const result = await transactionService.withdrawTransaction(1, 50000);
+
+      expect(result).toEqual(account);
+      expect(transactionService.prisma.bank_accounts.findUnique).toHaveBeenCalledTimes(1);
+      expect(transactionService.prisma.bank_accounts.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+      expect(transactionService.prisma.bank_accounts.update).toHaveBeenCalledTimes(1);
+      expect(transactionService.prisma.bank_accounts.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { balance: 950000 },
+      });
+    });
+
+    it("should throw an error if account not found", async () => {
+      transactionService.prisma.bank_accounts.findUnique.mockResolvedValue(null);
+      await expect(transactionService.withdrawTransaction(1, 50000)).rejects.toThrow("Account not found");
+    });
+
+    it("should throw an error if balance is insufficient", async () => {
+      const account = {
+        id: 1,
+        balance: 10000,
+      };
+
+      transactionService.prisma.bank_accounts.findUnique.mockResolvedValue(account);
+      await expect(transactionService.withdrawTransaction(1, 50000)).rejects.toThrow("Insufficient balance");
+    });
+  });
+
+  describe("deposit", () => {
+    it("should deposit an amount to an account", async () => {
+      const account = {
+        id: 1,
+        balance: 1000000,
+      };
+
+      transactionService.prisma.bank_accounts.findUnique.mockResolvedValue(account);
+      transactionService.prisma.bank_accounts.update.mockResolvedValue(account);
+      const result = await transactionService.deposit(1, 50000);
+
+      expect(result).toEqual(account);
+      expect(transactionService.prisma.bank_accounts.findUnique).toHaveBeenCalledTimes(1);
+      expect(transactionService.prisma.bank_accounts.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+      expect(transactionService.prisma.bank_accounts.update).toHaveBeenCalledTimes(1);
+      expect(transactionService.prisma.bank_accounts.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { balance: 1050000 },
+      });
+    });
+
+    it("should throw an error if account not found", async () => {
+      transactionService.prisma.bank_accounts.findUnique.mockResolvedValue(null);
+      await expect(transactionService.deposit(1, 50000)).rejects.toThrow("Account not found");
     });
   });
 });
