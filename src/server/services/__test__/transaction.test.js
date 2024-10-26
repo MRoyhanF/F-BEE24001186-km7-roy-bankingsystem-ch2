@@ -400,4 +400,16 @@ describe("TransactionService", () => {
       });
     });
   });
+
+  describe("deleteTransaction", () => {
+    it("should delete a transaction by id", async () => {
+      transactionService.prisma.transactions.delete.mockResolvedValue({ id: 1 });
+      const result = await transactionService.deleteTransaction(1);
+      expect(result).toEqual({ id: 1 });
+      expect(transactionService.prisma.transactions.delete).toHaveBeenCalledTimes(1);
+      expect(transactionService.prisma.transactions.delete).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+    });
+  });
 });
