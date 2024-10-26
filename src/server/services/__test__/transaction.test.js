@@ -348,4 +348,56 @@ describe("TransactionService", () => {
       });
     });
   });
+
+  describe("createTransaction", () => {
+    it("should create a new transaction", async () => {
+      const data = {
+        amount: 100000,
+        source_account_id: 1,
+        destination_account_id: 2,
+      };
+
+      const transaction = {
+        id: 1,
+        amount: 100000,
+        source_account: {
+          bank_name: "BCA",
+          bank_account_number: "1234567890",
+          user: {
+            name: "Fadhli",
+            email: "fadhli@gmail.com",
+          },
+        },
+        destination_account: {
+          bank_name: "BNI",
+          bank_account_number: "0987654321",
+          user: {
+            name: "Roy",
+            email: "roy@gmail.com",
+          },
+        },
+      };
+
+      transactionService.prisma.transactions.create.mockResolvedValue(transaction);
+      const result = await transactionService.createTransaction(data);
+
+      expect(result).toEqual(transaction);
+      expect(transactionService.prisma.transactions.create).toHaveBeenCalledTimes(1);
+      expect(transactionService.prisma.transactions.create).toHaveBeenCalledWith({
+        data: {
+          amount: 100000,
+          source_account: {
+            connect: {
+              id: 1,
+            },
+          },
+          destination_account: {
+            connect: {
+              id: 2,
+            },
+          },
+        },
+      });
+    });
+  });
 });
