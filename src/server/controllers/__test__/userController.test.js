@@ -105,4 +105,31 @@ describe("UserController", () => {
       //   expect(receivedError.message).toBe(error.message);
     });
   });
+
+  describe("getUserById", () => {
+    it("should get user by id", async () => {
+      const user = { id: 1, name: "Roy" };
+      UserService.prototype.getUserById.mockResolvedValue(user);
+
+      await userController.getUserById(req, res, next);
+
+      expect(UserService.prototype.getUserById).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ status: "Success", data: user });
+    });
+
+    it("should handle error", async () => {
+      const error = new Error("Internal server error");
+      UserService.prototype.getUserById.mockRejectedValue(error);
+
+      await userController.getUserById(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0]; // Get the error passed to next
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+      //   expect(receivedError.statusCode).toBe(500);
+      //   expect(receivedError.message).toBe(error.message);
+    });
+  });
 });
