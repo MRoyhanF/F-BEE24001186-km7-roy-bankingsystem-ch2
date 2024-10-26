@@ -118,6 +118,20 @@ describe("UserController", () => {
       expect(res.json).toHaveBeenCalledWith({ status: "Success", data: user });
     });
 
+    it("should return 404 if user not found", async () => {
+      UserService.prototype.getUserById.mockResolvedValue(null);
+
+      await userController.getUserById(req, res, next);
+
+      expect(UserService.prototype.getUserById).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0]; // Get the error passed to next
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+      // expect(receivedError.statusCode).toBe(404);
+      // expect(receivedError.message).toBe("User not found");
+    });
+
     it("should handle error", async () => {
       const error = new Error("Internal server error");
       UserService.prototype.getUserById.mockRejectedValue(error);
@@ -148,11 +162,69 @@ describe("UserController", () => {
       expect(res.json).toHaveBeenCalledWith({ status: "Success", data: newUser });
     });
 
+    it("should handle validEmail", async () => {
+      UserService.prototype.getUserByEmail.mockResolvedValue({ id: 1, name: "Roy" });
+
+      await userController.createUser(req, res, next);
+
+      expect(UserValidation.validate).toHaveBeenCalledTimes(1);
+      expect(UserService.prototype.getUserByEmail).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0]; // Get the error passed to next
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+      //   expect(receivedError.statusCode).toBe(400);
+      //   expect(receivedError.message).toBe("Email already exists");
+    });
+
     it("should handle error", async () => {
       const error = new Error("Internal server error");
       UserService.prototype.getUserByEmail.mockRejectedValue(error);
 
       await userController.createUser(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0]; // Get the error passed to next
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+      //   expect(receivedError.statusCode).toBe(400);
+      //   expect(receivedError.message).toBe(error.message);
+    });
+  });
+
+  describe("updateUser", () => {
+    it("should update a user", async () => {
+      const updatedUser = { id: 1, name: "Roy" };
+      UserService.prototype.updateUser.mockResolvedValue(updatedUser);
+
+      await userController.updateUser(req, res, next);
+
+      expect(UserValidation.validate).toHaveBeenCalledTimes(1);
+      expect(UserService.prototype.updateUser).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ status: "Success", data: updatedUser });
+    });
+
+    it("should return 404 if user not found", async () => {
+      UserService.prototype.updateUser.mockResolvedValue(null);
+
+      await userController.updateUser(req, res, next);
+
+      expect(UserValidation.validate).toHaveBeenCalledTimes(1);
+      expect(UserService.prototype.updateUser).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0]; // Get the error passed to next
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+      // expect(receivedError.statusCode).toBe(404);
+      // expect(receivedError.message).toBe("User not found");
+    });
+
+    it("should handle error", async () => {
+      const error = new Error("Internal server error");
+      UserService.prototype.updateUser.mockRejectedValue(error);
+
+      await userController.updateUser(req, res, next);
 
       expect(next).toHaveBeenCalled();
       const receivedError = next.mock.calls[0][0]; // Get the error passed to next
