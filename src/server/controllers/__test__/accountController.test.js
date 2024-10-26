@@ -133,4 +133,29 @@ describe("AccountController", () => {
       expect(receivedError).toBeInstanceOf(ErrorHandler);
     });
   });
+
+  describe("getAccountById", () => {
+    it("should get account by id", async () => {
+      const account = { id: 1, account_number: 1234567890 };
+      AccountService.prototype.getAccountById.mockResolvedValue(account);
+
+      await AccountController.getAccountById(req, res, next);
+
+      expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ Status: "Success", Data: account });
+    });
+
+    it("should handle error", async () => {
+      const error = new Error("Internal server error");
+      AccountService.prototype.getAccountById.mockRejectedValue(error);
+
+      await AccountController.getAccountById(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+  });
 });
