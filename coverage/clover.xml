@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1729939095676" clover="3.2.0">
-  <project timestamp="1729939095677" name="All files">
-    <metrics statements="16" coveredstatements="16" conditionals="4" coveredconditionals="3" methods="7" coveredmethods="7" elements="27" coveredelements="26" complexity="0" loc="16" ncloc="16" packages="1" files="1" classes="1"/>
+<coverage generated="1729947101981" clover="3.2.0">
+  <project timestamp="1729947101981" name="All files">
+    <metrics statements="23" coveredstatements="23" conditionals="4" coveredconditionals="3" methods="14" coveredmethods="14" elements="41" coveredelements="40" complexity="0" loc="23" ncloc="23" packages="1" files="2" classes="2"/>
+    <file name="accountSevice.js" path="D:\CODE\F-BEE24001186-km7-roy-bankingsystem-ch2\src\server\services\accountSevice.js">
+      <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="7" coveredmethods="7"/>
+      <line num="5" count="7" type="stmt"/>
+      <line num="9" count="1" type="stmt"/>
+      <line num="17" count="1" type="stmt"/>
+      <line num="26" count="1" type="stmt"/>
+      <line num="34" count="1" type="stmt"/>
+      <line num="49" count="1" type="stmt"/>
+      <line num="56" count="1" type="stmt"/>
+    </file>
     <file name="userService.js" path="D:\CODE\F-BEE24001186-km7-roy-bankingsystem-ch2\src\server\services\userService.js">
       <metrics statements="16" coveredstatements="16" conditionals="4" coveredconditionals="3" methods="7" coveredmethods="7"/>
       <line num="5" count="7" type="stmt"/>
