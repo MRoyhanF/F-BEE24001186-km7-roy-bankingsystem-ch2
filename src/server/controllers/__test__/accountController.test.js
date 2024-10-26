@@ -216,4 +216,30 @@ describe("AccountController", () => {
       expect(receivedError).toBeInstanceOf(ErrorHandler);
     });
   });
+
+  describe("deleteAccount", () => {
+    it("should delete account", async () => {
+      const account = { id: 1, account_number: 1234567890 };
+      AccountService.prototype.getAccountById.mockResolvedValue(account);
+
+      await AccountController.deleteAccount(req, res, next);
+
+      expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(1);
+      expect(AccountService.prototype.deleteAccount).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ Status: "Success", Message: "Account Deleted Successfully" });
+    });
+
+    it("should handle error", async () => {
+      const error = new Error("Internal server error");
+      AccountService.prototype.getAccountById.mockRejectedValue(error);
+
+      await AccountController.deleteAccount(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+  });
 });
