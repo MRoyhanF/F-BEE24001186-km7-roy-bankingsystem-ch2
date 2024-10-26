@@ -132,4 +132,34 @@ describe("UserController", () => {
       //   expect(receivedError.message).toBe(error.message);
     });
   });
+
+  describe("createUser", () => {
+    it("should create a user", async () => {
+      const newUser = { id: 1, name: "Roy" };
+      UserService.prototype.getUserByEmail.mockResolvedValue(null);
+      UserService.prototype.createUser.mockResolvedValue(newUser);
+
+      await userController.createUser(req, res, next);
+
+      expect(UserValidation.validate).toHaveBeenCalledTimes(1);
+      expect(UserService.prototype.getUserByEmail).toHaveBeenCalledTimes(1);
+      expect(UserService.prototype.createUser).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({ status: "Success", data: newUser });
+    });
+
+    it("should handle error", async () => {
+      const error = new Error("Internal server error");
+      UserService.prototype.getUserByEmail.mockRejectedValue(error);
+
+      await userController.createUser(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0]; // Get the error passed to next
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+      //   expect(receivedError.statusCode).toBe(400);
+      //   expect(receivedError.message).toBe(error.message);
+    });
+  });
 });
