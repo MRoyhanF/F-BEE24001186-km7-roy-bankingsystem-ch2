@@ -200,4 +200,78 @@ describe("TransactionController", () => {
       expect(receivedError).toBeInstanceOf(ErrorHandler);
     });
   });
+
+  describe("createTransaction", () => {
+    it("should create transaction", async () => {
+      const sourceAccount = { id: 1, balance: 100 };
+      const destinationAccount = { id: 2, balance: 200 };
+      const transaction = { id: 1, amount: 100 };
+      TransactionService.prototype.createTransaction.mockResolvedValue(transaction);
+      AccountService.prototype.getAccountById.mockResolvedValueOnce(sourceAccount).mockResolvedValueOnce(destinationAccount);
+
+      await TransactionController.createTransaction(req, res, next);
+
+      expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(2);
+      expect(TransactionService.prototype.createTransaction).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({ Status: "Success", Data: transaction });
+    });
+
+    it("should source account not found", async () => {
+      AccountService.prototype.getAccountById.mockResolvedValue(null);
+
+      await TransactionController.createTransaction(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+
+    it("should destination account not found", async () => {
+      AccountService.prototype.getAccountById.mockResolvedValueOnce({ id: 1, balance: 100 }).mockResolvedValueOnce(null);
+
+      await TransactionController.createTransaction(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+
+    it("should source and destination account cannot be the same", async () => {
+      AccountService.prototype.getAccountById.mockResolvedValueOnce({ id: 1, balance: 100 }).mockResolvedValueOnce({ id: 1, balance: 100 });
+
+      await TransactionController.createTransaction(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+
+    it("should insufficient balance", async () => {
+      AccountService.prototype.getAccountById.mockResolvedValueOnce({ id: 1, balance: 100 }).mockResolvedValueOnce({ id: 2, balance: 200 });
+      req.body.amount = 200;
+
+      await TransactionController.createTransaction(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+
+    it("should handle error", async () => {
+      const error = new Error("Internal server error");
+      TransactionService.prototype.createTransaction.mockRejectedValue(error);
+
+      await TransactionController.createTransaction(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+  });
 });
