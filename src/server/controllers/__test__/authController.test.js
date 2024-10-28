@@ -130,6 +130,34 @@ describe("AuthController", () => {
       expect(next).not.toHaveBeenCalled();
     });
 
+    it("should throw an error if password is invalid", async () => {
+      const req = { body: { email: "roy@gmail.com", password: "password123", confmPassword: "password123" } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const next = jest.fn();
+
+      UserService.prototype.getUserByEmail.mockResolvedValue({ email: "roy@gmail.com", password: "password" });
+
+      await authController.login(req, res, next);
+
+      expect(ErrorHandler).toHaveBeenCalledWith(400, "Invalid password");
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+
+    it("should password and confirm password do not match", async () => {
+      const req = { body: { email: "roy@gmail.com", password: "password123", confmPassword: "password1234" } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const next = jest.fn();
+
+      UserService.prototype.getUserByEmail.mockResolvedValue({ email: "roy@gmail.com", password: "password123" });
+
+      await authController.login(req, res, next);
+
+      expect(ErrorHandler).toHaveBeenCalledWith(400, "Password does not match");
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+
     it("should throw an error if user not found", async () => {
       const req = { body: { email: "roy@gmail.com", password: "password123", confmPassword: "password123" } };
       const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
