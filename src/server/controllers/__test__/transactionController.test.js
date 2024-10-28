@@ -165,25 +165,39 @@ describe("TransactionController", () => {
     });
   });
 
-  // describe("getTransactionById", () => {
-  //   it("should get transaction by id", async () => {
-  //     const transaction = { id: 1, amount: 100 };
-  //     TransactionService.prototype.getTransactionById.mockResolvedValue(transaction);
+  describe("getTransactionById", () => {
+    it("should get transaction by id", async () => {
+      const transaction = { id: 1, amount: 100 };
+      TransactionService.prototype.getTransactionById.mockResolvedValue(transaction);
 
-  //     await TransactionController.getTransactionById(req, res, next);
+      await TransactionController.getTransactionById(req, res, next);
 
-  //     expect(TransactionService.prototype.getTransactionById).toHaveBeenCalledTimes(1);
-  //     expect(res.status).toHaveBeenCalledWith(200);
-  //     expect(res.json).toHaveBeenCalledWith({ Status: "Success", Data: transaction });
-  //   });
+      expect(TransactionService.prototype.getTransactionById).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ Status: "Success", Data: transaction });
+    });
 
-  //   it("should return 404 if transaction not found", async () => {
-  //     const error = new ErrorHandler(404, "Transaction Not Found");
-  //     TransactionService.prototype.getTransactionById.mockResolvedValue(null);
+    it("should transaction not found", async () => {
+      TransactionService.prototype.getTransactionById.mockResolvedValue(null);
 
-  //     await TransactionController.getTransactionById(req, res, next);
+      await TransactionController.getTransactionById(req, res, next);
 
-  //     expect(next).toHaveBeenCalledWith(error);
-  //   });
-  // });
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+
+    it("should handle error", async () => {
+      const error = new Error("Internal server error");
+      TransactionService.prototype.getTransactionById.mockRejectedValue(error);
+
+      await TransactionController.getTransactionById(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+  });
 });
