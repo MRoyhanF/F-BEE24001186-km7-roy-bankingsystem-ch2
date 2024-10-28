@@ -113,4 +113,35 @@ describe("AuthController", () => {
       expect(res.json).not.toHaveBeenCalled();
     });
   });
+
+  describe("login", () => {
+    it("should login a user", async () => {
+      const req = { body: { email: "roy@gmail.com", password: "password123", confmPassword: "password123" } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const next = jest.fn();
+
+      UserService.prototype.getUserByEmail.mockResolvedValue({ email: "roy@gmail.com", password: "password123" });
+      jwt.sign.mockReturnValue("token");
+
+      await authController.login(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ status: "Success", token: "token" });
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("should throw an error if user not found", async () => {
+      const req = { body: { email: "roy@gmail.com", password: "password123", confmPassword: "password123" } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const next = jest.fn();
+
+      UserService.prototype.getUserByEmail.mockResolvedValue(null);
+
+      await authController.login(req, res, next);
+
+      expect(ErrorHandler).toHaveBeenCalledWith(404, "User not found");
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+  });
 });
