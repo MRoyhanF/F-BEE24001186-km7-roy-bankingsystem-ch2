@@ -1,4 +1,4 @@
-import { AccountService } from "../services/accountSevice.js";
+import { AccountService } from "../services/accountService.js";
 import { UserService } from "../services/userService.js";
 import { AccountValidation } from "../validations/accountValidation.js";
 import { ErrorHandler } from "../middlewares/errorHandler.js";
