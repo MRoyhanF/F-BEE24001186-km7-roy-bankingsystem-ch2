@@ -1,4 +1,4 @@
-import { TransactionSevice } from "../transactionService";
+import { TransactionService } from "../transactionService";
 import { PrismaClient } from "@prisma/client";
 
 jest.mock("@prisma/client", () => ({
@@ -20,7 +20,7 @@ describe("TransactionService", () => {
   let transactionService;
 
   beforeEach(() => {
-    transactionService = new TransactionSevice();
+    transactionService = new TransactionService();
   });
 
   afterEach(() => {

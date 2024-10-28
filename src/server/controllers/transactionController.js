@@ -1,12 +1,11 @@
-import Joi from "joi";
-import { TransactionSevice } from "../services/transactionService.js";
-import { AccountService } from "../services/accountSevice.js";
+import { TransactionService } from "../services/transactionService.js";
+import { AccountService } from "../services/accountService.js";
 import { TransactionValidation } from "../validations/transactionValidation.js";
 import { ErrorHandler } from "../middlewares/errorHandler.js";
 
 class TransactionController {
   constructor() {
-    this.transactionService = new TransactionSevice();
+    this.transactionService = new TransactionService();
     this.accountService = new AccountService();
   }
 

@@ -1,10 +1,10 @@
 import AccountController from "../accountController";
-import { AccountService } from "../../services/accountSevice";
+import { AccountService } from "../../services/accountService";
 import { UserService } from "../../services/userService";
 import { AccountValidation } from "../../validations/accountValidation";
 import { ErrorHandler } from "../../middlewares/errorHandler";
 
-jest.mock("../../services/accountSevice");
+jest.mock("../../services/accountService");
 jest.mock("../../services/userService");
 jest.mock("../../validations/accountValidation");
 jest.mock("../../middlewares/errorHandler");

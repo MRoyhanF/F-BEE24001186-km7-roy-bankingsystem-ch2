@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { AccountService } from "../accountSevice";
+import { AccountService } from "../accountService";
 
 jest.mock("@prisma/client", () => ({
   PrismaClient: jest.fn(() => ({
