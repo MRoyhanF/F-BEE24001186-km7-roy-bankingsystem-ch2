@@ -9,7 +9,7 @@ router.get("/:id", checkToken, TransactionController.getTransactionById.bind(Tra
 router.post("/", checkToken, TransactionController.createTransaction.bind(TransactionController));
 // router.delete("/:id", TransactionController.deleteTransaction.bind(TransactionController));
 
-router.put("/withdraw/:id", TransactionController.withdrawTransaction.bind(TransactionController));
-router.put("/deposit/:id", TransactionController.depositTransaction.bind(TransactionController));
+router.put("/withdraw/:id", checkToken, TransactionController.withdrawTransaction.bind(TransactionController));
+router.put("/deposit/:id", checkToken, TransactionController.depositTransaction.bind(TransactionController));
 
 export default router;
