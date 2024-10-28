@@ -360,4 +360,41 @@ describe("TransactionController", () => {
       expect(receivedError).toBeInstanceOf(ErrorHandler);
     });
   });
+
+  describe("depositTransaction", () => {
+    it("should deposit transaction", async () => {
+      const account = { id: 1, balance: 100 };
+      AccountService.prototype.getAccountById.mockResolvedValue(account);
+
+      await TransactionController.depositTransaction(req, res, next);
+
+      // expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(1);
+      expect(TransactionService.prototype.deposit).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ Status: "Success", Message: "Deposit Success", Data: account });
+    });
+
+    it("should account not found", async () => {
+      AccountService.prototype.getAccountById.mockResolvedValue(null);
+
+      await TransactionController.depositTransaction(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+
+    it("should handle error", async () => {
+      const error = new Error("Internal server error");
+      TransactionService.prototype.deposit.mockRejectedValue(error);
+
+      await TransactionController.depositTransaction(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+  });
 });
