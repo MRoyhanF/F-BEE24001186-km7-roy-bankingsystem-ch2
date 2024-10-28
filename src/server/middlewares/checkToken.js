@@ -1,4 +1,3 @@
-// middlewares/checkToken.js
 import jwt from "jsonwebtoken";
 import { isTokenLoggedOut } from "../utils/tokenStore.js";
 
