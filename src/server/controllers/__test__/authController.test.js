@@ -109,7 +109,8 @@ describe("AuthController", () => {
       await authController.register(req, res, next);
 
       expect(ErrorHandler).toHaveBeenCalledWith(400, "Email already exists");
-      expect(next).toHaveBeenCalledWith(ErrorHandler.mock.instances[0]);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
   });
 });
