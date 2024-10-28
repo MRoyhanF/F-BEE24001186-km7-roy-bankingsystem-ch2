@@ -274,4 +274,41 @@ describe("TransactionController", () => {
       expect(receivedError).toBeInstanceOf(ErrorHandler);
     });
   });
+
+  describe("deleteTransaction", () => {
+    it("should delete transaction", async () => {
+      const transaction = { id: 1, amount: 100 };
+      TransactionService.prototype.getTransactionById.mockResolvedValue(transaction);
+
+      await TransactionController.deleteTransaction(req, res, next);
+
+      expect(TransactionService.prototype.getTransactionById).toHaveBeenCalledTimes(1);
+      expect(TransactionService.prototype.deleteTransaction).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ Status: "Success", Message: "Transaction Deleted Successfully" });
+    });
+
+    it("should transaction not found", async () => {
+      TransactionService.prototype.getTransactionById.mockResolvedValue(null);
+
+      await TransactionController.deleteTransaction(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+
+    it("should handle error", async () => {
+      const error = new Error("Internal server error");
+      TransactionService.prototype.deleteTransaction.mockRejectedValue(error);
+
+      await TransactionController.deleteTransaction(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      const receivedError = next.mock.calls[0][0];
+
+      expect(receivedError).toBeInstanceOf(ErrorHandler);
+    });
+  });
 });
