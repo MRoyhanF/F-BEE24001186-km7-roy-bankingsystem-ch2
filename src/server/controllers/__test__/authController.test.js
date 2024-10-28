@@ -144,4 +144,31 @@ describe("AuthController", () => {
       expect(res.json).not.toHaveBeenCalled();
     });
   });
+
+  describe("logout", () => {
+    it("should logout a user", async () => {
+      const req = { headers: { authorization: "Bearer token " } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const next = jest.fn();
+
+      storeToken.mockReturnValue();
+      await authController.logout(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ status: "Success", message: "User logged out successfully" });
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("should throw an error if no token provided", async () => {
+      const req = { headers: { authorization: "" } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const next = jest.fn();
+
+      await authController.logout(req, res, next);
+
+      expect(ErrorHandler).toHaveBeenCalledWith(400, "No token provided");
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+  });
 });
