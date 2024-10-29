@@ -1,6 +1,7 @@
 import { UserService } from "../services/userService.js";
 import { ErrorHandler } from "../middlewares/errorHandler.js";
 import { UserValidation } from "../validations/userValidation.js";
+import bcrypt from "bcrypt";
 
 class UserController {
   constructor() {
@@ -33,6 +34,8 @@ class UserController {
       const validEmail = await this.userService.getUserByEmail(req.body.email);
       if (validEmail) throw new ErrorHandler(400, "Email already exists");
 
+      req.body.password = await bcrypt.hash(req.body.password, 10);
+
       const newUser = await this.userService.createUser(req.body);
       res.status(201).json({ status: "Success", data: newUser });
     } catch (error) {
@@ -43,23 +46,25 @@ class UserController {
   async updateUser(req, res, next) {
     try {
       UserValidation.validate(UserValidation.updateUserSchema, req.body);
+
+      const user = await this.userService.getUserById(req.params.id);
+      if (!user) throw new ErrorHandler(404, "User not found");
+
+      if (req.body.email) {
+        const existingUser = await this.userService.getUserByEmail(req.body.email);
+        if (existingUser && existingUser.id !== user.id) throw new ErrorHandler(400, "Email already exists");
+      }
+
+      if (req.body.password) {
+        req.body.password = await bcrypt.hash(req.body.password, 10);
+      }
+
       const updatedUser = await this.userService.updateUser(req.params.id, req.body);
-      if (!updatedUser) throw new ErrorHandler(404, "User not found");
       res.status(200).json({ status: "Success", data: updatedUser });
     } catch (error) {
       next(new ErrorHandler(400, error.message));
     }
   }
-
-  // async deleteUser(req, res, next) {
-  //   try {
-  //     const deletedUser = await this.userService.deleteUser(req.params.id);
-  //     if (!deletedUser) throw new ErrorHandler(404, "User not found");
-  //     res.status(200).json({ status: "Success", message: "User deleted successfully" });
-  //   } catch (error) {
-  //     next(new ErrorHandler(500, error.message));
-  //   }
-  // }
 }
 
 export default new UserController();

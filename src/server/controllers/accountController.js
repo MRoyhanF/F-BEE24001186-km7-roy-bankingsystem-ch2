@@ -51,16 +51,25 @@ class AccountController {
     try {
       AccountValidation.validate(AccountValidation.updateAccountSchema, req.body);
 
-      const validAccount = await this.accountService.getAccountById(req.params.id);
-      if (!validAccount) throw new ErrorHandler(404, "Account Not Found");
+      const account = await this.accountService.getAccountById(req.params.id);
 
-      const existingAccount = await this.accountService.getAccountByUser(req.body.user_id);
-      if (existingAccount) {
-        throw new ErrorHandler(400, "User Already Has an Account");
+      if (!account) {
+        throw new ErrorHandler(404, "Account not found");
+      }
+
+      if (req.body.user_id) {
+        const existingAccount = await this.accountService.getAccountByUser(req.body.user_id);
+        if (existingAccount && existingAccount.id !== account.id) {
+          throw new ErrorHandler(400, "User already has an account");
+        }
+        if (!existingAccount) {
+          throw new ErrorHandler(404, "User not found");
+        }
       }
 
       const updatedAccount = await this.accountService.updateAccount(req.params.id, req.body);
-      res.status(200).json({ Status: "Success", Message: "Account Updated Successfully", Data: updatedAccount });
+
+      res.status(200).json({ status: "Success", message: "Account updated successfully", data: updatedAccount });
     } catch (error) {
       next(new ErrorHandler(500, error.message));
     }

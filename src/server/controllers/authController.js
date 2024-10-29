@@ -3,6 +3,7 @@ import { ErrorHandler } from "../middlewares/errorHandler.js";
 import jwt from "jsonwebtoken";
 import { UserValidation } from "../validations/userValidation.js";
 import { storeToken, isTokenLoggedOut } from "../utils/tokenStore.js";
+import bcrypt from "bcrypt";
 
 class AuthController {
   constructor() {
@@ -15,6 +16,8 @@ class AuthController {
 
       const validEmail = await this.userService.getUserByEmail(req.body.email);
       if (validEmail) throw new ErrorHandler(400, "Email already exists");
+
+      req.body.password = await bcrypt.hash(req.body.password, 10);
 
       const newUser = await this.userService.createUser(req.body);
       res.status(201).json({ status: "Success", data: newUser });
@@ -30,7 +33,9 @@ class AuthController {
       const user = await this.userService.getUserByEmail(email);
       if (!user) throw new ErrorHandler(404, "User not found");
 
-      if (user.password !== password) throw new ErrorHandler(400, "Invalid password");
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) throw new ErrorHandler(400, "Invalid password");
+
       if (password !== confmPassword) throw new ErrorHandler(400, "Password does not match");
 
       // Generate JWT token
