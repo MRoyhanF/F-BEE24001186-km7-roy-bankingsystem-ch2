@@ -5,12 +5,11 @@
   "main": "./src/main.js",
   "type": "module",
   "scripts": {
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:watch": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --watchAll",
+    "test": "npx jest",
+    "test:watch": "npx jest --coverage",
     "start": "node src/main.js",
     "dev": "nodemon src/main.js",
-    "seed": "node prisma/seed.js",
-    "doc": "node ./swagger.js"
+    "seed": "node prisma/seed.js"
   },
   "jest": {
     "transform": {
