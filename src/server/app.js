@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
 // Swagger Docs
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // API Routes
 app.use("/api/auth", authRoutes);
