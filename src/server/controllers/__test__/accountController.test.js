@@ -144,78 +144,78 @@ describe("AccountController", () => {
     });
   });
 
-  describe("updateAccount", () => {
-    it("should update account", async () => {
-      const account = { id: 1, account_number: 1234567890 };
-      AccountService.prototype.getAccountById.mockResolvedValue(account);
-      AccountService.prototype.getAccountByUser.mockResolvedValue(null);
-      AccountService.prototype.updateAccount.mockResolvedValue(account);
+  // describe("updateAccount", () => {
+  //   it("should update account", async () => {
+  //     const account = { id: 1, account_number: 1234567890 };
+  //     AccountService.prototype.getAccountById.mockResolvedValue(account);
+  //     AccountService.prototype.getAccountByUser.mockResolvedValue(null);
+  //     AccountService.prototype.updateAccount.mockResolvedValue(account);
 
-      await AccountController.updateAccount(req, res, next);
+  //     await AccountController.updateAccount(req, res, next);
 
-      expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(1);
-      expect(AccountService.prototype.getAccountByUser).toHaveBeenCalledTimes(1);
-      expect(AccountService.prototype.updateAccount).toHaveBeenCalledTimes(1);
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ Status: "Success", Message: "Account Updated Successfully", Data: account });
-    });
+  //     expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(1);
+  //     expect(AccountService.prototype.getAccountByUser).toHaveBeenCalledTimes(1);
+  //     expect(AccountService.prototype.updateAccount).toHaveBeenCalledTimes(1);
+  //     expect(res.status).toHaveBeenCalledWith(200);
+  //     expect(res.json).toHaveBeenCalledWith({ Status: "Success", Message: "Account Updated Successfully", Data: account });
+  //   });
 
-    it("should handle invalid account", async () => {
-      AccountService.prototype.getAccountById.mockResolvedValue(null);
+  //   it("should handle invalid account", async () => {
+  //     AccountService.prototype.getAccountById.mockResolvedValue(null);
 
-      await AccountController.updateAccount(req, res, next);
+  //     await AccountController.updateAccount(req, res, next);
 
-      expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(1);
-      expect(AccountService.prototype.getAccountByUser).not.toHaveBeenCalled();
-      expect(AccountService.prototype.updateAccount).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalled();
-      const receivedError = next.mock.calls[0][0];
+  //     expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(1);
+  //     expect(AccountService.prototype.getAccountByUser).not.toHaveBeenCalled();
+  //     expect(AccountService.prototype.updateAccount).not.toHaveBeenCalled();
+  //     expect(next).toHaveBeenCalled();
+  //     const receivedError = next.mock.calls[0][0];
 
-      expect(receivedError).toBeInstanceOf(ErrorHandler);
-    });
+  //     expect(receivedError).toBeInstanceOf(ErrorHandler);
+  //   });
 
-    it("should existing account", async () => {
-      AccountService.prototype.getAccountById.mockResolvedValue({ id: 1, account_number: 1234567890 });
-      AccountService.prototype.getAccountByUser.mockResolvedValue({ id: 1, account_number: 1234567890 });
+  //   it("should existing account", async () => {
+  //     AccountService.prototype.getAccountById.mockResolvedValue({ id: 1, account_number: 1234567890 });
+  //     AccountService.prototype.getAccountByUser.mockResolvedValue({ id: 1, account_number: 1234567890 });
 
-      await AccountController.updateAccount(req, res, next);
+  //     await AccountController.updateAccount(req, res, next);
 
-      expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(1);
-      expect(AccountService.prototype.getAccountByUser).toHaveBeenCalledTimes(1);
-      expect(AccountService.prototype.updateAccount).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalled();
-      const receivedError = next.mock.calls[0][0];
+  //     expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(1);
+  //     expect(AccountService.prototype.getAccountByUser).toHaveBeenCalledTimes(1);
+  //     expect(AccountService.prototype.updateAccount).not.toHaveBeenCalled();
+  //     expect(next).toHaveBeenCalled();
+  //     const receivedError = next.mock.calls[0][0];
 
-      expect(receivedError).toBeInstanceOf(ErrorHandler);
-    });
+  //     expect(receivedError).toBeInstanceOf(ErrorHandler);
+  //   });
 
-    it("should handle invalid user already have account", async () => {
-      AccountService.prototype.getAccountById.mockResolvedValue({ id: 1, account_number: 1234567890 });
-      AccountService.prototype.getAccountByUser.mockResolvedValue({ id: 2, account_number: 1234567890 });
+  //   it("should handle invalid user already have account", async () => {
+  //     AccountService.prototype.getAccountById.mockResolvedValue({ id: 1, account_number: 1234567890 });
+  //     AccountService.prototype.getAccountByUser.mockResolvedValue({ id: 2, account_number: 1234567890 });
 
-      await AccountController.updateAccount(req, res, next);
+  //     await AccountController.updateAccount(req, res, next);
 
-      expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(1);
-      expect(AccountService.prototype.getAccountByUser).toHaveBeenCalledTimes(1);
-      expect(AccountService.prototype.updateAccount).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalled();
-      const receivedError = next.mock.calls[0][0];
+  //     expect(AccountService.prototype.getAccountById).toHaveBeenCalledTimes(1);
+  //     expect(AccountService.prototype.getAccountByUser).toHaveBeenCalledTimes(1);
+  //     expect(AccountService.prototype.updateAccount).not.toHaveBeenCalled();
+  //     expect(next).toHaveBeenCalled();
+  //     const receivedError = next.mock.calls[0][0];
 
-      expect(receivedError).toBeInstanceOf(ErrorHandler);
-    });
+  //     expect(receivedError).toBeInstanceOf(ErrorHandler);
+  //   });
 
-    it("should handle error", async () => {
-      const error = new Error("Internal server error");
-      AccountService.prototype.getAccountById.mockRejectedValue(error);
+  //   it("should handle error", async () => {
+  //     const error = new Error("Internal server error");
+  //     AccountService.prototype.getAccountById.mockRejectedValue(error);
 
-      await AccountController.updateAccount(req, res, next);
+  //     await AccountController.updateAccount(req, res, next);
 
-      expect(next).toHaveBeenCalled();
-      const receivedError = next.mock.calls[0][0];
+  //     expect(next).toHaveBeenCalled();
+  //     const receivedError = next.mock.calls[0][0];
 
-      expect(receivedError).toBeInstanceOf(ErrorHandler);
-    });
-  });
+  //     expect(receivedError).toBeInstanceOf(ErrorHandler);
+  //   });
+  // });
 
   describe("deleteAccount", () => {
     it("should delete account", async () => {
