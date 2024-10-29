@@ -1,5 +1,25 @@
 ### Muhamad Royhan Fadhli
 
+# Taks Chapter 5
+
+### 1. Documentation
+
+- After runned program go to `http://localhost:3000/api-docs`
+
+### 2. Running unit testing
+
+- Test
+
+```
+npm run test
+```
+
+- Test by Coverage
+
+```
+npm run test:watch
+```
+
 # Taks Chapter 4
 
 ## How To Use

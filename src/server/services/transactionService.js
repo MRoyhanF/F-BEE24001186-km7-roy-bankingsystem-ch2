@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-export class TransactionSevice {
+export class TransactionService {
   constructor() {
     this.prisma = new PrismaClient();
   }
