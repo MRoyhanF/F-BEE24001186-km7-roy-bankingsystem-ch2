@@ -13,23 +13,20 @@ class AuthController {
   async register(req, res, next) {
     try {
       const { name, email, password, profile } = req.body;
-      const parsedProfile = JSON.parse(profile);
 
       UserValidation.validate(UserValidation.createUserSchema, {
         name,
         email,
         password,
-        profile: parsedProfile,
+        profile: JSON.parse(profile),
       });
 
-      let imageUrl;
+      let imageUrl = null;
       if (req.file) {
         if (req.file.size > 1024 * 1024 * 2) {
           throw new ErrorHandler(400, "File size is too large");
         }
-        imageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
-      } else {
-        imageUrl = null;
+        imageUrl = await this.userService.uploadImageToImageKit(req.file);
       }
 
       const validEmail = await this.userService.getUserByEmail(email);
@@ -37,7 +34,15 @@ class AuthController {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const newUser = await this.userService.createUser({ name, email, password: hashedPassword, profile: parsedProfile }, imageUrl);
+      const newUser = await this.userService.createUser(
+        {
+          name,
+          email,
+          password: hashedPassword,
+          profile: JSON.parse(profile),
+        },
+        imageUrl
+      );
 
       res.status(201).json({ status: "Success", data: newUser });
     } catch (error) {

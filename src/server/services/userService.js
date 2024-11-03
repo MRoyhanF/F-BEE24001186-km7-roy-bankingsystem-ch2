@@ -1,8 +1,14 @@
+import ImageKit from "imagekit";
 import { PrismaClient } from "@prisma/client";
 
 export class UserService {
   constructor() {
     this.prisma = new PrismaClient();
+    this.imagekit = new ImageKit({
+      publicKey: process.env.IMAGEKIT_API_KEY,
+      privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+      urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+    });
   }
 
   async getAllUsers() {
@@ -26,6 +32,23 @@ export class UserService {
     });
   }
 
+  async uploadImageToImageKit(file) {
+    try {
+      const timestamp = Date.now();
+      const newFileName = `${timestamp}-${file.originalname}`;
+
+      const result = await this.imagekit.upload({
+        file: file.buffer,
+        fileName: newFileName,
+        folder: "/photo",
+      });
+
+      return result.url;
+    } catch (error) {
+      throw new Error(`Image upload failed: ${error.message}`);
+    }
+  }
+
   async createUser(data, imageUrl) {
     const { profile, ...userData } = data;
     return this.prisma.users.create({
@@ -40,23 +63,6 @@ export class UserService {
         profile: true,
       },
     });
-  }
-
-  async storeUserAndProfile(data) {
-    const { profile, ...userData } = data;
-
-    const user = await this.prisma.users.create({
-      data: userData,
-    });
-
-    await this.prisma.profiles.create({
-      data: {
-        ...profile,
-        user_id: user.id,
-      },
-    });
-
-    return user;
   }
 
   async updateUser(id, data) {
@@ -92,27 +98,4 @@ export class UserService {
       data,
     });
   }
-
-  // async deleteUser(id) {
-  //   const userId = parseInt(id);
-
-  //   const user = await this.prisma.users.findUnique({
-  //     where: { id: userId },
-  //     include: { profile: true },
-  //   });
-
-  //   if (!user) throw new Error("User not found");
-
-  //   await this.prisma.profiles.delete({
-  //     where: { id: user.profile[0].id },
-  //   });
-
-  //   await this.prisma.bank_accounts.deleteMany({
-  //     where: { user_id: userId },
-  //   });
-
-  //   return this.prisma.users.delete({
-  //     where: { id: userId },
-  //   });
-  // }
 }
