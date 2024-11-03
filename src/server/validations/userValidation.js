@@ -10,6 +10,8 @@ export class UserValidation {
       identity_number: Joi.string().min(16).max(20).required(),
       address: Joi.string().min(3).required(),
     }).required(),
+  }).messages({
+    "object.unknown": "Input contains unknown keys",
   });
 
   static updateUserSchema = Joi.object({

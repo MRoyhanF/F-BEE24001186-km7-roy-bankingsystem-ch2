@@ -14,7 +14,7 @@ class AccountController {
       const account = await this.accountService.getAllAccount();
       res.status(200).json({ Status: "Success", Data: account });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -24,7 +24,7 @@ class AccountController {
       if (!account) throw new ErrorHandler(404, "User Not Found");
       res.status(200).json({ Status: "Success", Data: account });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -43,7 +43,7 @@ class AccountController {
       const account = await this.accountService.createAccount(req.body);
       res.status(201).json({ Status: "Success", Data: account });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -71,7 +71,7 @@ class AccountController {
 
       res.status(200).json({ status: "Success", message: "Account updated successfully", data: updatedAccount });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -83,7 +83,7 @@ class AccountController {
       await this.accountService.deleteAccount(req.params.id);
       res.status(200).json({ Status: "Success", Message: "Account Deleted Successfully" });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 }

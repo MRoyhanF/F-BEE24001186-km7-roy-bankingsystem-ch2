@@ -21,6 +21,7 @@ model users {
   name      String
   email     String   @unique
   password  String
+  foto      String?
   profile   profiles[]
   bank_account bank_accounts[]
 }

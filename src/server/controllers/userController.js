@@ -13,7 +13,7 @@ class UserController {
       const users = await this.userService.getAllUsers();
       res.status(200).json({ status: "Success", data: users });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -23,29 +23,31 @@ class UserController {
       if (!user) throw new ErrorHandler(404, "User not found");
       res.status(200).json({ status: "Success", data: user });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
-    }
-  }
-
-  async createUser(req, res, next) {
-    try {
-      UserValidation.validate(UserValidation.createUserSchema, req.body);
-
-      const validEmail = await this.userService.getUserByEmail(req.body.email);
-      if (validEmail) throw new ErrorHandler(400, "Email already exists");
-
-      req.body.password = await bcrypt.hash(req.body.password, 10);
-
-      const newUser = await this.userService.createUser(req.body);
-      res.status(201).json({ status: "Success", data: newUser });
-    } catch (error) {
-      next(new ErrorHandler(400, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
   async updateUser(req, res, next) {
     try {
-      UserValidation.validate(UserValidation.updateUserSchema, req.body);
+      const { name, email, password, profile } = req.body;
+
+      // Ensure that profile is a valid JSON string or an object
+      let parsedProfile = {};
+      if (profile) {
+        try {
+          parsedProfile = typeof profile === "string" ? JSON.parse(profile) : profile;
+        } catch (error) {
+          throw new ErrorHandler(400, "Profile data is not valid JSON");
+        }
+      }
+
+      // Validate user input
+      UserValidation.validate(UserValidation.updateUserSchema, {
+        name,
+        email,
+        password,
+        profile: parsedProfile,
+      });
 
       const user = await this.userService.getUserById(req.params.id);
       if (!user) throw new ErrorHandler(404, "User not found");
@@ -59,10 +61,21 @@ class UserController {
         req.body.password = await bcrypt.hash(req.body.password, 10);
       }
 
-      const updatedUser = await this.userService.updateUser(req.params.id, req.body);
+      // Check if a new file has been uploaded
+      if (req.file) {
+        // Delete the old image if it exists
+        await this.userService.deleteImageFromImageKit(user.foto); // Ensure to pass the old image URL
+        const imageUrl = await this.userService.uploadImageToImageKit(req.file);
+        req.body.foto = imageUrl; // Set the new image URL to the request body
+      }
+
+      const updatedUser = await this.userService.updateUser(req.params.id, {
+        ...req.body,
+        profile: parsedProfile, // Pass the parsed profile data
+      });
       res.status(200).json({ status: "Success", data: updatedUser });
     } catch (error) {
-      next(new ErrorHandler(400, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 }
