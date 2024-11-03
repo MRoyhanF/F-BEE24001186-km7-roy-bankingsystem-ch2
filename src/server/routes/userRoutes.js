@@ -8,8 +8,8 @@ const router = express.Router();
 
 // router.get("/", checkToken, UserController.getAllUsers.bind(UserController));
 // router.get("/:id", checkToken, UserController.getUserById.bind(UserController));
-router.post("/", upload.single("foto"), UserController.storeUser.bind(UserController));
-// router.patch("/:id", UserController.updateUser.bind(UserController));
+// router.post("/", upload.single("foto"), UserController.storeUser.bind(UserController));
+// // router.patch("/:id", UserController.updateUser.bind(UserController));
 
 // router.post("/upload", upload().single("image"), uploadController);
 
