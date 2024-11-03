@@ -31,15 +31,60 @@ class UserController {
     try {
       UserValidation.validate(UserValidation.createUserSchema, req.body);
 
+      let imageUrl;
+      if (req.file) {
+        if (req.file.size > 1024 * 1024 * 2) {
+          throw new ErrorHandler(400, "File size is too large");
+        }
+        imageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+      } else {
+        imageUrl = null;
+      }
+
       const validEmail = await this.userService.getUserByEmail(req.body.email);
       if (validEmail) throw new ErrorHandler(400, "Email already exists");
 
       req.body.password = await bcrypt.hash(req.body.password, 10);
 
-      const newUser = await this.userService.createUser(req.body);
+      const newUser = await this.userService.createUser(req.body, imageUrl);
       res.status(201).json({ status: "Success", data: newUser });
     } catch (error) {
-      next(new ErrorHandler(400, error.message));
+      next(new ErrorHandler(500, error.message));
+    }
+  }
+
+  async storeUser(req, res, next) {
+    try {
+      const { name, email, password, profile } = req.body;
+      const parsedProfile = JSON.parse(profile);
+
+      UserValidation.validate(UserValidation.createUserSchema, {
+        name,
+        email,
+        password,
+        profile: parsedProfile,
+      });
+
+      let imageUrl;
+      if (req.file) {
+        if (req.file.size > 1024 * 1024 * 2) {
+          throw new ErrorHandler(400, "File size is too large");
+        }
+        imageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+      } else {
+        imageUrl = null;
+      }
+
+      const validEmail = await this.userService.getUserByEmail(email);
+      if (validEmail) throw new ErrorHandler(400, "Email already exists");
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const newUser = await this.userService.createUser({ name, email, password: hashedPassword, profile: parsedProfile }, imageUrl);
+
+      res.status(201).json({ status: "Success", data: newUser });
+    } catch (error) {
+      next(new ErrorHandler(500, error.message));
     }
   }
 

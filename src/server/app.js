@@ -21,10 +21,10 @@ app.set("view engine", "ejs");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // API Routes
-app.use("/api/v1/auth", authRoutes);
+// app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/accounts", accountRoutes);
-app.use("/api/v1/transactions", transactionRoutes);
+// app.use("/api/v1/accounts", accountRoutes);
+// app.use("/api/v1/transactions", transactionRoutes);
 
 // Routes Not Found
 app.use(handleError);

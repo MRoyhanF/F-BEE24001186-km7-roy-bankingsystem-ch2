@@ -26,11 +26,12 @@ export class UserService {
     });
   }
 
-  async createUser(data) {
+  async createUser(data, imageUrl) {
     const { profile, ...userData } = data;
     return this.prisma.users.create({
       data: {
         ...userData,
+        foto: imageUrl,
         profile: {
           create: profile,
         },
@@ -39,6 +40,23 @@ export class UserService {
         profile: true,
       },
     });
+  }
+
+  async storeUserAndProfile(data) {
+    const { profile, ...userData } = data;
+
+    const user = await this.prisma.users.create({
+      data: userData,
+    });
+
+    await this.prisma.profiles.create({
+      data: {
+        ...profile,
+        user_id: user.id,
+      },
+    });
+
+    return user;
   }
 
   async updateUser(id, data) {
