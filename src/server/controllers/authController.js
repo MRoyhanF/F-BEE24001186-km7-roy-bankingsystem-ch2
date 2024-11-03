@@ -46,7 +46,7 @@ class AuthController {
 
       res.status(201).json({ status: "Success", data: newUser });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -67,7 +67,7 @@ class AuthController {
 
       res.status(200).json({ status: "Success", token });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -81,7 +81,7 @@ class AuthController {
 
       res.status(200).json({ status: "Success", message: "User logged out successfully" });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 }
