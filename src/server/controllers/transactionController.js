@@ -14,7 +14,7 @@ class TransactionController {
       const transaction = await this.transactionService.getAllTransaction();
       res.status(200).json({ Status: "Success", Data: transaction });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -24,7 +24,7 @@ class TransactionController {
       if (!transaction) throw new ErrorHandler(404, "Transaction Not Found");
       res.status(200).json({ Status: "Success", Data: transaction });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -55,7 +55,7 @@ class TransactionController {
       const transaction = await this.transactionService.createTransaction(req.body);
       res.status(201).json({ Status: "Success", Data: transaction });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -67,7 +67,7 @@ class TransactionController {
       await this.transactionService.deleteTransaction(req.params.id);
       res.status(200).json({ Status: "Success", Message: "Transaction Deleted Successfully" });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -87,7 +87,7 @@ class TransactionController {
 
       res.status(200).json({ Status: "Success", Message: "Withdrawal Success", Data: accountStatus });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 
@@ -104,7 +104,7 @@ class TransactionController {
 
       res.status(200).json({ Status: "Success", Message: "Deposit Success", Data: accountStatus });
     } catch (error) {
-      next(new ErrorHandler(500, error.message));
+      next(new ErrorHandler(error.statusCode || 500, error.message));
     }
   }
 }
