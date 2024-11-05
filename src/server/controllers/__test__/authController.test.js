@@ -20,40 +20,85 @@ describe("AuthController", () => {
     authController = new AuthController();
   });
 
-  // describe("register", () => {
-  //   it("should create a new user", async () => {
-  //     const req = { body: { email: "roy@gmail.com", password: "password123", confmPassword: "password123" } };
-  //     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-  //     const next = jest.fn();
+  describe("register", () => {
+    it("should create a new user", async () => {
+      const req = {
+        body: {
+          name: "Roy",
+          email: "roy@gmail.com",
+          password: "password123",
+          confmPassword: "password123",
+          profile: JSON.stringify({ age: 30 }), // Pastikan profile ada
+        },
+        file: { size: 1024 }, // Contoh file yang valid
+      };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const next = jest.fn();
 
-  //     UserValidation.validate.mockReturnValue();
-  //     UserService.prototype.getUserByEmail.mockResolvedValue(null);
-  //     bcrypt.hash.mockResolvedValue("hashedPassword123"); // Mock bcrypt.hash
-  //     UserService.prototype.createUser.mockResolvedValue({ email: "roy@gmail.com" });
+      UserValidation.validate.mockReturnValue();
+      UserService.prototype.getUserByEmail.mockResolvedValue(null);
+      bcrypt.hash.mockResolvedValue("hashedPassword123");
+      UserService.prototype.createUser.mockResolvedValue({ email: "roy@gmail.com" });
 
-  //     await authController.register(req, res, next);
+      await authController.register(req, res, next);
 
-  //     expect(bcrypt.hash).toHaveBeenCalledWith("password123", 10);
-  //     expect(res.status).toHaveBeenCalledWith(201);
-  //     expect(res.json).toHaveBeenCalledWith({ status: "Success", data: { email: "roy@gmail.com" } });
-  //     expect(next).not.toHaveBeenCalled();
-  //   });
+      expect(UserValidation.validate).toHaveBeenCalledWith(UserValidation.createUserSchema, {
+        name: "Roy",
+        email: "roy@gmail.com",
+        password: "password123",
+        profile: { age: 30 }, // Pastikan ini adalah objek, bukan string
+      });
+      expect(bcrypt.hash).toHaveBeenCalledWith("password123", 10);
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({ status: "Success", data: { email: "roy@gmail.com" } });
+      expect(next).not.toHaveBeenCalled();
+    });
 
-  //   it("should throw an error if email already exists", async () => {
-  //     const req = { body: { email: "roy@gmail.com", password: "password123", confmPassword: "password123" } };
-  //     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-  //     const next = jest.fn();
+    it("should throw an error if email already exists", async () => {
+      const req = {
+        body: {
+          name: "Roy",
+          email: "roy@gmail.com",
+          password: "password123",
+          confmPassword: "password123",
+          profile: JSON.stringify({ age: 30 }),
+        },
+        file: null,
+      };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const next = jest.fn();
 
-  //     UserValidation.validate.mockReturnValue();
-  //     UserService.prototype.getUserByEmail.mockResolvedValue({ email: "roy@gmail.com" });
+      UserValidation.validate.mockReturnValue();
+      UserService.prototype.getUserByEmail.mockResolvedValue({ email: "roy@gmail.com" });
 
-  //     await authController.register(req, res, next);
+      await authController.register(req, res, next);
 
-  //     expect(ErrorHandler).toHaveBeenCalledWith(400, "Email already exists");
-  //     expect(res.status).not.toHaveBeenCalled();
-  //     expect(res.json).not.toHaveBeenCalled();
-  //   });
-  // });
+      expect(ErrorHandler).toHaveBeenCalledWith(400, "Email already exists");
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+
+    it("should throw an error if file size is too large", async () => {
+      const req = {
+        body: {
+          name: "Roy",
+          email: "roy@gmail.com",
+          password: "password123",
+          confmPassword: "password123",
+          profile: JSON.stringify({ age: 30 }),
+        },
+        file: { size: 1024 * 1024 * 3 },
+      };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const next = jest.fn();
+
+      await authController.register(req, res, next);
+
+      expect(ErrorHandler).toHaveBeenCalledWith(400, "File size is too large");
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+  });
 
   describe("login", () => {
     it("should login a user", async () => {
