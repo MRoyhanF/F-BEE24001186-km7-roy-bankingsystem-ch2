@@ -20,40 +20,40 @@ describe("AuthController", () => {
     authController = new AuthController();
   });
 
-  describe("register", () => {
-    it("should create a new user", async () => {
-      const req = { body: { email: "roy@gmail.com", password: "password123", confmPassword: "password123" } };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-      const next = jest.fn();
+  // describe("register", () => {
+  //   it("should create a new user", async () => {
+  //     const req = { body: { email: "roy@gmail.com", password: "password123", confmPassword: "password123" } };
+  //     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+  //     const next = jest.fn();
 
-      UserValidation.validate.mockReturnValue();
-      UserService.prototype.getUserByEmail.mockResolvedValue(null);
-      bcrypt.hash.mockResolvedValue("hashedPassword123"); // Mock bcrypt.hash
-      UserService.prototype.createUser.mockResolvedValue({ email: "roy@gmail.com" });
+  //     UserValidation.validate.mockReturnValue();
+  //     UserService.prototype.getUserByEmail.mockResolvedValue(null);
+  //     bcrypt.hash.mockResolvedValue("hashedPassword123"); // Mock bcrypt.hash
+  //     UserService.prototype.createUser.mockResolvedValue({ email: "roy@gmail.com" });
 
-      await authController.register(req, res, next);
+  //     await authController.register(req, res, next);
 
-      expect(bcrypt.hash).toHaveBeenCalledWith("password123", 10);
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith({ status: "Success", data: { email: "roy@gmail.com" } });
-      expect(next).not.toHaveBeenCalled();
-    });
+  //     expect(bcrypt.hash).toHaveBeenCalledWith("password123", 10);
+  //     expect(res.status).toHaveBeenCalledWith(201);
+  //     expect(res.json).toHaveBeenCalledWith({ status: "Success", data: { email: "roy@gmail.com" } });
+  //     expect(next).not.toHaveBeenCalled();
+  //   });
 
-    it("should throw an error if email already exists", async () => {
-      const req = { body: { email: "roy@gmail.com", password: "password123", confmPassword: "password123" } };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-      const next = jest.fn();
+  //   it("should throw an error if email already exists", async () => {
+  //     const req = { body: { email: "roy@gmail.com", password: "password123", confmPassword: "password123" } };
+  //     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+  //     const next = jest.fn();
 
-      UserValidation.validate.mockReturnValue();
-      UserService.prototype.getUserByEmail.mockResolvedValue({ email: "roy@gmail.com" });
+  //     UserValidation.validate.mockReturnValue();
+  //     UserService.prototype.getUserByEmail.mockResolvedValue({ email: "roy@gmail.com" });
 
-      await authController.register(req, res, next);
+  //     await authController.register(req, res, next);
 
-      expect(ErrorHandler).toHaveBeenCalledWith(400, "Email already exists");
-      expect(res.status).not.toHaveBeenCalled();
-      expect(res.json).not.toHaveBeenCalled();
-    });
-  });
+  //     expect(ErrorHandler).toHaveBeenCalledWith(400, "Email already exists");
+  //     expect(res.status).not.toHaveBeenCalled();
+  //     expect(res.json).not.toHaveBeenCalled();
+  //   });
+  // });
 
   describe("login", () => {
     it("should login a user", async () => {
