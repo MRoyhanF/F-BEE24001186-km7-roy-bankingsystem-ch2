@@ -31,7 +31,6 @@ class UserController {
     try {
       const { name, email, password, profile } = req.body;
 
-      // Ensure that profile is a valid JSON string or an object
       let parsedProfile = {};
       if (profile) {
         try {
@@ -41,7 +40,6 @@ class UserController {
         }
       }
 
-      // Validate user input
       UserValidation.validate(UserValidation.updateUserSchema, {
         name,
         email,
@@ -61,17 +59,15 @@ class UserController {
         req.body.password = await bcrypt.hash(req.body.password, 10);
       }
 
-      // Check if a new file has been uploaded
       if (req.file) {
-        // Delete the old image if it exists
-        await this.userService.deleteImageFromImageKit(user.foto); // Ensure to pass the old image URL
+        await this.userService.deleteImageFromImageKit(user.foto);
         const imageUrl = await this.userService.uploadImageToImageKit(req.file);
-        req.body.foto = imageUrl; // Set the new image URL to the request body
+        req.body.foto = imageUrl;
       }
 
       const updatedUser = await this.userService.updateUser(req.params.id, {
         ...req.body,
-        profile: parsedProfile, // Pass the parsed profile data
+        profile: parsedProfile,
       });
       res.status(200).json({ status: "Success", data: updatedUser });
     } catch (error) {

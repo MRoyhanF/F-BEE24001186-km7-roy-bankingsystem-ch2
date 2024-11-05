@@ -77,120 +77,106 @@ describe("UserController", () => {
     });
   });
 
-  // describe("createUser", () => {
-  //   it("should create a user with hashed password", async () => {
-  //     const newUser = { id: 1, name: "Roy" };
-  //     UserService.prototype.getUserByEmail.mockResolvedValue(null);
-  //     bcrypt.hash.mockResolvedValue("hashed_password");
-  //     UserService.prototype.createUser.mockResolvedValue(newUser);
+  // async updateUser(req, res, next) {
+  //   try {
+  //     const { name, email, password, profile } = req.body;
 
-  //     await userController.createUser(req, res, next);
+  //     // Ensure that profile is a valid JSON string or an object
+  //     let parsedProfile = {};
+  //     if (profile) {
+  //       try {
+  //         parsedProfile = typeof profile === "string" ? JSON.parse(profile) : profile;
+  //       } catch (error) {
+  //         throw new ErrorHandler(400, "Profile data is not valid JSON");
+  //       }
+  //     }
 
-  //     expect(UserValidation.validate).toHaveBeenCalledWith(UserValidation.createUserSchema, req.body);
-  //     expect(UserService.prototype.getUserByEmail).toHaveBeenCalledWith(req.body.email);
-  //     // expect(bcrypt.hash).toHaveBeenCalledWith(req.body.password, 10);
-  //     expect(UserService.prototype.createUser).toHaveBeenCalledWith({ ...req.body, password: "hashed_password" });
-  //     expect(res.status).toHaveBeenCalledWith(201);
-  //     expect(res.json).toHaveBeenCalledWith({ status: "Success", data: newUser });
-  //   });
+  //     // Validate user input
+  //     UserValidation.validate(UserValidation.updateUserSchema, {
+  //       name,
+  //       email,
+  //       password,
+  //       profile: parsedProfile,
+  //     });
 
-  //   it("should handle existing email", async () => {
-  //     UserService.prototype.getUserByEmail.mockResolvedValue({ id: 1, name: "Roy" });
+  //     const user = await this.userService.getUserById(req.params.id);
+  //     if (!user) throw new ErrorHandler(404, "User not found");
 
-  //     await userController.createUser(req, res, next);
+  //     if (req.body.email) {
+  //       const existingUser = await this.userService.getUserByEmail(req.body.email);
+  //       if (existingUser && existingUser.id !== user.id) throw new ErrorHandler(400, "Email already exists");
+  //     }
 
-  //     expect(UserValidation.validate).toHaveBeenCalledWith(UserValidation.createUserSchema, req.body);
-  //     expect(UserService.prototype.getUserByEmail).toHaveBeenCalledWith(req.body.email);
-  //     expect(next).toHaveBeenCalled();
-  //     const receivedError = next.mock.calls[0][0];
+  //     if (req.body.password) {
+  //       req.body.password = await bcrypt.hash(req.body.password, 10);
+  //     }
 
-  //     expect(receivedError).toBeInstanceOf(ErrorHandler);
-  //     // expect(receivedError.statusCode).toBe(400);
-  //     // expect(receivedError.message).toBe("Email already exists");
-  //   });
-  // });
+  //     // Check if a new file has been uploaded
+  //     if (req.file) {
+  //       // Delete the old image if it exists
+  //       await this.userService.deleteImageFromImageKit(user.foto); // Ensure to pass the old image URL
+  //       const imageUrl = await this.userService.uploadImageToImageKit(req.file);
+  //       req.body.foto = imageUrl; // Set the new image URL to the request body
+  //     }
 
-  // describe("updateUser", () => {
-  //   it("should update a user with optional password hashing", async () => {
-  //     const updatedUser = { id: 1, name: "Roy" };
-  //     UserService.prototype.getUserById.mockResolvedValue(updatedUser);
-  //     UserService.prototype.updateUser.mockResolvedValue(updatedUser);
-  //     bcrypt.hash.mockResolvedValue("hashed_password");
+  //     const updatedUser = await this.userService.updateUser(req.params.id, {
+  //       ...req.body,
+  //       profile: parsedProfile, // Pass the parsed profile data
+  //     });
+  //     res.status(200).json({ status: "Success", data: updatedUser });
+  //   } catch (error) {
+  //     next(new ErrorHandler(error.statusCode || 500, error.message));
+  //   }
+  // }
+  // hendle test for updateUser
+  describe("updateUser", () => {
+    it("should update user", async () => {
+      req.body = {
+        name: "Roy",
+        email: "roy@gmail.com",
+        password: "password123",
+        profile: JSON.stringify({ identity_type: "KTP", identity_number: "1234567890123456", address: "Jakarta" }),
+      };
 
-  //     req.body.password = "new_password";
+      const user = { id: 1, name: "Roy" };
+      UserService.prototype.getUserById.mockResolvedValue(user);
+      UserService.prototype.getUserByEmail.mockResolvedValue(null);
+      UserService.prototype.updateUser.mockResolvedValue(user);
 
-  //     await userController.updateUser(req, res, next);
+      await userController.updateUser(req, res, next);
 
-  //     expect(UserValidation.validate).toHaveBeenCalledWith(UserValidation.updateUserSchema, req.body);
-  //     expect(UserService.prototype.getUserById).toHaveBeenCalledWith(req.params.id);
-  //     // expect(bcrypt.hash).toHaveBeenCalledWith(req.body.password, 10);
-  //     expect(UserService.prototype.updateUser).toHaveBeenCalledWith(req.params.id, { ...req.body, password: "hashed_password" });
-  //     expect(res.status).toHaveBeenCalledWith(200);
-  //     expect(res.json).toHaveBeenCalledWith({ status: "Success", data: updatedUser });
-  //   });
+      expect(UserService.prototype.getUserById).toHaveBeenCalledTimes(1);
+      expect(UserService.prototype.getUserByEmail).toHaveBeenCalledTimes(1);
+      expect(UserService.prototype.updateUser).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ status: "Success", data: user });
+    });
+  });
 
-  //   it("should update a user without password hashing if password not provided", async () => {
-  //     const updatedUser = { id: 1, name: "Roy" };
-  //     UserService.prototype.getUserById.mockResolvedValue(updatedUser);
-  //     UserService.prototype.updateUser.mockResolvedValue(updatedUser);
-  //     req.body.password = undefined;
+  it("should return 404 if user not found", async () => {
+    UserService.prototype.getUserById.mockResolvedValue(null);
 
-  //     await userController.updateUser(req, res, next);
+    await userController.updateUser(req, res, next);
 
-  //     expect(UserValidation.validate).toHaveBeenCalledWith(UserValidation.updateUserSchema, req.body);
-  //     expect(UserService.prototype.getUserById).toHaveBeenCalledWith(req.params.id);
-  //     expect(bcrypt.hash).not.toHaveBeenCalled();
-  //     expect(UserService.prototype.updateUser).toHaveBeenCalledWith(req.params.id, req.body);
-  //     expect(res.status).toHaveBeenCalledWith(200);
-  //     expect(res.json).toHaveBeenCalledWith({ status: "Success", data: updatedUser });
-  //   });
+    expect(next).toHaveBeenCalled();
+    const receivedError = next.mock.calls[0][0];
 
-  //   it("should handle if there is no email in request body", async () => {
-  //     const updatedUser = { id: 1, name: "Roy" };
-  //     UserService.prototype.getUserById.mockResolvedValue(updatedUser);
-  //     UserService.prototype.updateUser.mockResolvedValue(updatedUser);
+    expect(receivedError).toBeInstanceOf(ErrorHandler);
+    // expect(receivedError.statusCode).toBe(404);
+    // expect(receivedError.message).toBe("User not found");
+  });
 
-  //     req.body.email = undefined;
+  it("should return 400 if email already exists", async () => {
+    UserService.prototype.getUserById.mockResolvedValue({ id: 1, email: "roy@gmail.com" });
+    UserService.prototype.getUserByEmail.mockResolvedValue({ id: 2, email: "roy@gmail.com" });
 
-  //     await userController.updateUser(req, res, next);
+    await userController.updateUser(req, res, next);
 
-  //     expect(UserValidation.validate).toHaveBeenCalledWith(UserValidation.updateUserSchema, req.body);
-  //     expect(UserService.prototype.getUserById).toHaveBeenCalledWith(req.params.id);
-  //     expect(UserService.prototype.updateUser).toHaveBeenCalledWith(req.params.id, req.body);
-  //     expect(res.status).toHaveBeenCalledWith(200);
-  //     expect(res.json).toHaveBeenCalledWith({ status: "Success", data: updatedUser });
-  //   });
+    expect(next).toHaveBeenCalled();
+    const receivedError = next.mock.calls[0][0];
 
-  //   it("should handle existing email", async () => {
-  //     UserService.prototype.getUserById.mockResolvedValue({ id: 1, name: "Roy" });
-  //     UserService.prototype.getUserByEmail.mockResolvedValue({ id: 2, name: "Roy" });
-
-  //     await userController.updateUser(req, res, next);
-
-  //     expect(UserValidation.validate).toHaveBeenCalledWith(UserValidation.updateUserSchema, req.body);
-  //     expect(UserService.prototype.getUserById).toHaveBeenCalledWith(req.params.id);
-  //     expect(UserService.prototype.getUserByEmail).toHaveBeenCalledWith(req.body.email);
-  //     expect(next).toHaveBeenCalled();
-  //     const receivedError = next.mock.calls[0][0];
-
-  //     expect(receivedError).toBeInstanceOf(ErrorHandler);
-  //     // expect(receivedError.statusCode).toBe(400);
-  //     // expect(receivedError.message).toBe("Email already exists");
-  //   });
-
-  //   it("should return 404 if user not found for update", async () => {
-  //     UserService.prototype.getUserById.mockResolvedValue(null);
-
-  //     await userController.updateUser(req, res, next);
-
-  //     expect(UserValidation.validate).toHaveBeenCalledWith(UserValidation.updateUserSchema, req.body);
-  //     expect(UserService.prototype.getUserById).toHaveBeenCalledWith(req.params.id);
-  //     expect(next).toHaveBeenCalled();
-  //     const receivedError = next.mock.calls[0][0];
-
-  //     expect(receivedError).toBeInstanceOf(ErrorHandler);
-  //     // expect(receivedError.statusCode).toBe(404);
-  //     // expect(receivedError.message).toBe("User not found");
-  //   });
-  // });
+    expect(receivedError).toBeInstanceOf(ErrorHandler);
+    // expect(receivedError.statusCode).toBe(400);
+    // expect(receivedError.message).toBe("Email already exists");
+  });
 });
