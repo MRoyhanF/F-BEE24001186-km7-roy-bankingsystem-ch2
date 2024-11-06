@@ -36,7 +36,7 @@ class UserController {
         try {
           parsedProfile = typeof profile === "string" ? JSON.parse(profile) : profile;
         } catch (error) {
-          throw new ErrorHandler(400, "Profile data is not valid JSON");
+          next(new ErrorHandler(error.statusCode || 400, error.message));
         }
       }
 

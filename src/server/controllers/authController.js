@@ -2,7 +2,7 @@ import { UserService } from "../services/userService.js";
 import { ErrorHandler } from "../middlewares/errorHandler.js";
 import jwt from "jsonwebtoken";
 import { UserValidation } from "../validations/userValidation.js";
-import { storeToken, isTokenLoggedOut } from "../utils/tokenStore.js";
+import { storeToken } from "../utils/tokenStore.js";
 import bcrypt from "bcrypt";
 
 class AuthController {

@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { ErrorHandler } from "../middlewares/errorHandler.js";
 import { isTokenLoggedOut } from "../utils/tokenStore.js";
 
 export const checkToken = (req, res, next) => {
@@ -15,6 +16,6 @@ export const checkToken = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
+    next(new ErrorHandler(error.statusCode || 401, error.message));
   }
 };

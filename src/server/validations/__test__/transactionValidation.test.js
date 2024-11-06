@@ -1,26 +1,4 @@
-// import Joi from "joi";
-
-// export class TransactionValidation {
-//   static createTransactionSchema = Joi.object({
-//     source_account_id: Joi.number().required(),
-//     destination_account_id: Joi.number().required(),
-//     amount: Joi.number().required(),
-//   });
-
-//   static transactionSchema = Joi.object({
-//     amount: Joi.number().required(),
-//   });
-
-//   static validate(schema, data) {
-//     const { error } = schema.validate(data);
-//     if (error) {
-//       throw new Error(error.details[0].message);
-//     }
-//   }
-// }
-
-// unit test for transactionValidation.js using Jest with mock function
-
+import { describe, it, expect } from "@jest/globals";
 import Joi from "joi";
 import { TransactionValidation } from "../transactionValidation";
 

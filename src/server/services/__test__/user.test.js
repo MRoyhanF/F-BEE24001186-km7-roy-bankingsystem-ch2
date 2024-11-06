@@ -1,12 +1,11 @@
+import { jest, describe, it, expect, beforeAll, afterEach, afterAll } from "@jest/globals";
 import { UserService } from "../userService";
 import ImageKit from "imagekit";
-import { PrismaClient } from "@prisma/client";
 
 const mockFindMany = jest.fn();
 const mockFindUnique = jest.fn();
 const mockCreate = jest.fn();
 const mockUpdate = jest.fn();
-const mockDelete = jest.fn();
 const mockFindFirst = jest.fn();
 
 jest.mock("imagekit");

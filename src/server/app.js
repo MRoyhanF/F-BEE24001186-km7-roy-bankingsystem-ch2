@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./docs/swagger2.json" assert { type: "json" };
+import swaggerDocument from "./docs/swagger2.json" with { type: "json" };
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
