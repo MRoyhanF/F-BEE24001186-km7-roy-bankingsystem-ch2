@@ -5,13 +5,12 @@ name: CI
 
 on:
   push:
-    branches: [ "chapter-6" ]
+    branches: ["chapter-6"]
   pull_request:
-    branches: [ "chapter-6" ]
+    branches: ["chapter-6"]
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,18 +19,25 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: init depedencies
-      run: npm install
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
 
-    - name: running eslint
-      run: npm run lint
-      
-    - name: running testing
-      run: npm run test
+      - name: init depedencies
+        run: npm install
+
+      - name: running eslint
+        run: npm run lint
+
+      - name: running testing
+        run: npm run test:watch
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          token: ${{ secrets.CODECOV_TOKEN }}
