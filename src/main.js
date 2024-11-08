@@ -1,12 +1,12 @@
-// import "dotenv/config";
-import dotenv from "dotenv";
+import "dotenv/config";
+// import dotenv from "dotenv";
 import http from "http";
 import app from "./server/app.js";
 import listEndpoints from "express-list-endpoints";
 
 // Menentukan environment dan file .env sesuai environment
-const env = process.env.NODE_ENV || "development";
-dotenv.config({ path: `.env.${env}` });
+// const env = process.env.NODE_ENV || "development";
+// dotenv.config({ path: `.env.${env}` });
 
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
