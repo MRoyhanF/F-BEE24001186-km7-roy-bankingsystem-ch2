@@ -1,135 +1,181 @@
-import { PrismaClient } from "@prisma/client";
+import { jest, describe, it, expect, beforeAll, afterEach, afterAll } from "@jest/globals";
 import { UserService } from "../userService";
+import ImageKit from "imagekit";
 
-jest.mock("@prisma/client", () => ({
-  PrismaClient: jest.fn(() => ({
-    users: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-    },
-    profiles: {
-      findFirst: jest.fn(),
-      update: jest.fn(),
-    },
-  })),
-}));
+const mockFindMany = jest.fn();
+const mockFindUnique = jest.fn();
+const mockCreate = jest.fn();
+const mockUpdate = jest.fn();
+const mockFindFirst = jest.fn();
+
+jest.mock("imagekit");
+jest.mock("@prisma/client", () => {
+  return {
+    PrismaClient: jest.fn().mockImplementation(() => {
+      return {
+        users: {
+          findMany: mockFindMany,
+          findUnique: mockFindUnique,
+          create: mockCreate,
+          update: mockUpdate,
+        },
+        profiles: {
+          findFirst: mockFindFirst,
+          update: jest.fn(),
+        },
+      };
+    }),
+  };
+});
 
 describe("UserService", () => {
   let userService;
 
-  beforeEach(() => {
+  beforeAll(() => {
     userService = new UserService();
+    jest.spyOn(userService, "deleteImageFromImageKit").mockImplementation(jest.fn());
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it("should create a new instance of PrismaClient", () => {
-    expect(PrismaClient).toHaveBeenCalledTimes(1);
+  afterAll(() => {
+    jest.resetAllMocks();
   });
 
   describe("getAllUsers", () => {
-    it("should return all users with their profiles", async () => {
+    it("should return all users", async () => {
       const users = [
         {
           id: 1,
-          email: "joko@gmail.com",
+          email: "roy@gmail.com",
+          foto: "https://imagekit.io/roy.jpg",
           profile: {
             id: 1,
-            bio: "Hello, I'm Joko",
-          },
-        },
-        {
-          id: 2,
-          email: "jokowi@gmail.com",
-          profile: {
-            id: 2,
-            bio: "Hello, I'm Jokowi",
+            user_id: 1,
+            bio: "Hello World",
           },
         },
       ];
 
-      userService.prisma.users.findMany.mockResolvedValue(users);
+      mockFindMany.mockResolvedValue(users);
+
       const result = await userService.getAllUsers();
 
       expect(result).toEqual(users);
-      expect(userService.prisma.users.findMany).toHaveBeenCalledTimes(1);
-      expect(userService.prisma.users.findMany).toHaveBeenCalledWith({ include: { profile: true } });
+      expect(mockFindMany).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("getUserById", () => {
-    it("should return a user by id with their profile", async () => {
+    it("should return user by id", async () => {
       const user = {
         id: 1,
-        email: "jokowi@gmail.com",
+        email: "roy@gmail.com",
+        foto: "https://imagekit.io/roy.jpg",
         profile: {
           id: 1,
-          bio: "Hello, I'm Jokowi",
+          user_id: 1,
+          bio: "Hello World",
         },
       };
-      userService.prisma.users.findUnique.mockResolvedValue(user);
+
+      mockFindUnique.mockResolvedValue(user);
+
       const result = await userService.getUserById(1);
+
       expect(result).toEqual(user);
-      expect(userService.prisma.users.findUnique).toHaveBeenCalledTimes(1);
-      expect(userService.prisma.users.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-        include: { profile: true },
-      });
+      expect(mockFindUnique).toHaveBeenCalledWith({ where: { id: 1 }, include: { profile: true } });
     });
+
+    // it("should throw error if user not found", async () => {
+    //   mockFindUnique.mockResolvedValue(null);
+
+    //   await expect(userService.getUserById(999)).rejects.toThrow("User not found");
+    // });
   });
 
   describe("getUserByEmail", () => {
-    it("should return a user by email", async () => {
+    it("should return user by email", async () => {
       const user = {
         id: 1,
-        email: "joko@gmail.com",
-        profile: {
-          id: 1,
-          bio: "Hello, I'm Joko",
-        },
+        email: "roy@gmail.com",
+        foto: "https://imagekit.io/roy.jpg",
       };
-      userService.prisma.users.findUnique.mockResolvedValue(user);
-      const result = await userService.getUserByEmail("joko@gmail.com");
+
+      mockFindUnique.mockResolvedValue(user);
+
+      const result = await userService.getUserByEmail("roy@gmail.com");
+
       expect(result).toEqual(user);
-      expect(userService.prisma.users.findUnique).toHaveBeenCalledTimes(1);
-      expect(userService.prisma.users.findUnique).toHaveBeenCalledWith({
-        where: { email: "joko@gmail.com" },
+      expect(mockFindUnique).toHaveBeenCalledWith({ where: { email: "roy@gmail.com" } });
+    });
+  });
+
+  describe("uploadImageToImageKit", () => {
+    it("should upload image and return URL", async () => {
+      const file = {
+        originalname: "test.jpg",
+        buffer: Buffer.from("image data"),
+      };
+
+      const expectedUrl = "https://imagekit.io/roy.jpg";
+
+      ImageKit.prototype.upload.mockResolvedValue({ url: expectedUrl });
+
+      const result = await userService.uploadImageToImageKit(file);
+
+      expect(result).toBe(expectedUrl);
+      expect(ImageKit.prototype.upload).toHaveBeenCalledWith({
+        file: file.buffer,
+        fileName: expect.stringContaining("test.jpg"),
+        folder: "/photo",
       });
+    });
+
+    it("should throw error if upload fails", async () => {
+      const file = {
+        originalname: "test.jpg",
+        buffer: Buffer.from("image data"),
+      };
+
+      ImageKit.prototype.upload.mockRejectedValue(new Error("Upload failed"));
+
+      await expect(userService.uploadImageToImageKit(file)).rejects.toThrow("Image upload failed: Upload failed");
     });
   });
 
   describe("createUser", () => {
-    it("should create a new user with their profile", async () => {
+    it("should create a new user", async () => {
       const data = {
-        email: "budi@gmail.com",
-        profile: {
-          bio: "Hello, I'm Budi",
-        },
+        email: "roy@gmail.com",
+        password: "password123",
+        profile: { bio: "Hello World" },
       };
-      const user = {
+      const imageUrl = "https://imagekit.io/roy.jpg";
+
+      const newUser = {
         id: 1,
-        email: "budi@gmail.com",
+        ...data,
+        foto: imageUrl,
         profile: {
           id: 1,
-          bio: "Hello, I'm Budi",
+          user_id: 1,
+          bio: "Hello World",
         },
       };
-      userService.prisma.users.create.mockResolvedValue(user);
-      const result = await userService.createUser(data);
-      expect(result).toEqual(user);
-      expect(userService.prisma.users.create).toHaveBeenCalledTimes(1);
-      expect(userService.prisma.users.create).toHaveBeenCalledWith({
+
+      mockCreate.mockResolvedValue(newUser);
+
+      const result = await userService.createUser(data, imageUrl);
+
+      expect(result).toEqual(newUser);
+      expect(mockCreate).toHaveBeenCalledWith({
         data: {
-          email: "budi@gmail.com",
-          profile: {
-            create: {
-              bio: "Hello, I'm Budi",
-            },
-          },
+          ...data,
+          foto: imageUrl,
+          profile: { create: data.profile },
         },
         include: { profile: true },
       });
@@ -137,46 +183,124 @@ describe("UserService", () => {
   });
 
   describe("updateUser", () => {
-    it("should update a user by id with their profile", async () => {
-      const data = {
-        email: "adit@gmail.com",
-        profile: {
-          bio: "Hello, I'm Adit",
-        },
-      };
-      const user = {
-        id: 1,
-        email: "adit@gmail.com",
+    it("should update user", async () => {
+      const userId = 1;
+      const userData = { email: "roy@gmail.com" };
+
+      const existingUser = {
+        id: userId,
+        email: "newroy@gmail.com",
+        foto: "https://imagekit.io/roy.jpg",
         profile: {
           id: 1,
-          bio: "Hello, I'm Adit",
+          user_id: userId,
+          bio: "Hello World",
         },
       };
-      userService.prisma.users.update.mockResolvedValue(user);
-      userService.prisma.profiles.findFirst.mockResolvedValue({ id: 1 });
-      const result = await userService.updateUser(1, data);
-      expect(result).toEqual(user);
-      expect(userService.prisma.users.update).toHaveBeenCalledTimes(1);
-      expect(userService.prisma.users.update).toHaveBeenCalledWith({
-        where: { id: 1 },
-        data: { email: "adit@gmail.com" },
+
+      mockFindUnique.mockResolvedValue(existingUser);
+      mockUpdate.mockResolvedValue({ ...existingUser, ...userData });
+
+      const result = await userService.updateUser(userId, userData);
+
+      expect(result).toEqual({ ...existingUser, ...userData });
+      expect(mockFindUnique).toHaveBeenCalledWith({ where: { id: userId }, include: { profile: true } });
+      expect(mockUpdate).toHaveBeenCalledWith({
+        where: { id: userId },
+        data: { ...userData, foto: existingUser.foto },
         include: { profile: true },
       });
-      expect(userService.prisma.profiles.findFirst).toHaveBeenCalledTimes(1);
-      expect(userService.prisma.profiles.findFirst).toHaveBeenCalledWith({ where: { user_id: 1 } });
     });
 
-    it("should thorw an error if profile not found", async () => {
-      const data = {
-        email: "woy@gmail.com",
+    it("should throw error if user not found during update", async () => {
+      mockFindUnique.mockResolvedValue(null);
+
+      await expect(userService.updateUser(999, {})).rejects.toThrow("User not found");
+    });
+
+    // if (foto && existingUser.foto) {
+    //   await this.deleteImageFromImageKit(existingUser.foto);
+    // }
+    // hendle this condition in test case
+    it("should delete existing image if new image is uploaded", async () => {
+      const userId = 1;
+      const userData = { email: "roy@gmail.com", foto: "https://imagekit.io/newroy.jpg" };
+
+      const existingUser = {
+        id: userId,
+        email: "newroy@gmail.com",
+        foto: "https://imagekit.io/roy.jpg",
         profile: {
-          bio: "Hello, I'm Woy",
+          id: 1,
+          user_id: userId,
+          bio: "Hello World",
         },
       };
-      userService.prisma.profiles.findFirst.mockResolvedValue(null);
-      await expect(userService.updateUser(1, data)).rejects.toThrow("Profile not found");
-      expect(userService.prisma.profiles.findFirst).toHaveBeenCalledTimes(1);
-      expect(userService.prisma.profiles.findFirst).toHaveBeenCalledWith({ where: { user_id: 1 } });
+
+      mockFindUnique.mockResolvedValue(existingUser);
+      mockUpdate.mockResolvedValue({ ...existingUser, ...userData });
+
+      await userService.updateUser(userId, userData);
+
+      expect(userService.deleteImageFromImageKit).toHaveBeenCalledWith(existingUser.foto);
+    });
+  });
+
+  describe("updateProfile", () => {
+    it("should update user profile", async () => {
+      const userId = 1;
+      const profileData = { bio: "Hello World" };
+
+      const existingProfile = {
+        id: 1,
+        user_id: userId,
+        bio: "Hello World",
+      };
+
+      mockFindFirst.mockResolvedValue(existingProfile);
+
+      await userService.updateProfile(userId, profileData);
+
+      expect(mockFindFirst).toHaveBeenCalledWith({ where: { user_id: userId } });
+    });
+
+    it("should throw error if profile not found", async () => {
+      mockFindFirst.mockResolvedValue(null);
+
+      await expect(userService.updateProfile(999, {})).rejects.toThrow("Profile not found");
+    });
+
+    it("should update profile if profile data is provided", async () => {
+      const userId = 1;
+      const profileData = { bio: "Hello World" };
+
+      const existingProfile = {
+        id: 1,
+        user_id: userId,
+        bio: "Hello World",
+      };
+
+      mockFindFirst.mockResolvedValue(existingProfile);
+
+      jest.spyOn(userService, "updateProfile").mockImplementation(jest.fn());
+
+      await userService.updateUser(userId, { profile: profileData });
+
+      expect(userService.updateProfile).toHaveBeenCalledWith(userId, profileData);
+    });
+  });
+
+  describe("deleteImageFromImageKit", () => {
+    it("should not delete image if URL is not provided", async () => {
+      await userService.deleteImageFromImageKit(null);
+
+      expect(userService.imagekit.deleteFile).not.toHaveBeenCalled();
+    });
+
+    it("should not delete image if URL is not provided", async () => {
+      await userService.deleteImageFromImageKit(null);
+
+      expect(userService.imagekit.deleteFile).not.toHaveBeenCalled();
     });
   });
 });

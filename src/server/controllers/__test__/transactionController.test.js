@@ -1,7 +1,7 @@
+import { jest, describe, it, expect, beforeEach, afterEach } from "@jest/globals";
 import TransactionController from "../transactionController.js";
 import { TransactionService } from "../../services/transactionService.js";
 import { AccountService } from "../../services/accountService.js";
-import { TransactionValidation } from "../../validations/transactionValidation.js";
 import { ErrorHandler } from "../../middlewares/errorHandler.js";
 
 jest.mock("../../services/transactionService.js");

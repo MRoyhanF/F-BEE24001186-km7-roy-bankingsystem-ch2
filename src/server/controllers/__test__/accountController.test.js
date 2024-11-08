@@ -1,7 +1,7 @@
+import { jest, describe, it, expect, beforeEach, afterEach } from "@jest/globals";
 import AccountController from "../accountController";
 import { AccountService } from "../../services/accountService";
 import { UserService } from "../../services/userService";
-import { AccountValidation } from "../../validations/accountValidation";
 import { ErrorHandler } from "../../middlewares/errorHandler";
 
 jest.mock("../../services/accountService");
@@ -143,34 +143,6 @@ describe("AccountController", () => {
       expect(receivedError).toBeInstanceOf(ErrorHandler);
     });
   });
-
-  // async updateAccount(req, res, next) {
-  //   try {
-  //     AccountValidation.validate(AccountValidation.updateAccountSchema, req.body);
-
-  //     const account = await this.accountService.getAccountById(req.params.id);
-
-  //     if (!account) {
-  //       throw new ErrorHandler(404, "Account not found");
-  //     }
-
-  //     if (req.body.user_id) {
-  //       const existingAccount = await this.accountService.getAccountByUser(req.body.user_id);
-  //       if (existingAccount && existingAccount.id !== account.id) {
-  //         throw new ErrorHandler(400, "User already has an account");
-  //       }
-  //       if (!existingAccount) {
-  //         throw new ErrorHandler(404, "User not found");
-  //       }
-  //     }
-
-  //     const updatedAccount = await this.accountService.updateAccount(req.params.id, req.body);
-
-  //     res.status(200).json({ status: "Success", message: "Account updated successfully", data: updatedAccount });
-  //   } catch (error) {
-  //     next(new ErrorHandler(500, error.message));
-  //   }
-  // }
 
   describe("updateAccount", () => {
     it("should update account", async () => {
