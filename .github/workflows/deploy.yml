@@ -1,0 +1,54 @@
+# name: Deploy to GCP App Engine
+
+# on:
+#   workflow_run:
+#     workflows: ["CI"]
+#     types:
+#       - completed
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+
+# jobs:
+#   build-and-deploy:
+#     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+#     runs-on: ubuntu-latest
+#     needs: test
+
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Google Cloud Auth
+#         uses: "google-github-actions/auth@v2"
+#         with:
+#           credentials_json: ${{ secrets.GCP_SA_KEY }}
+#           project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+#       - name: Set up Cloud SDK
+#         uses: "google-github-actions/setup-gcloud@v2"
+
+#       - name: Create app.yaml with Secrets
+#         run: |
+#           echo "runtime: nodejs" > app.yaml
+#           echo "env: flex" >> app.yaml
+#           echo "runtime_config:" >> app.yaml
+#           echo "  operating_system: 'ubuntu22'" >> app.yaml
+#           echo "  runtime_version: '20'" >> app.yaml
+#           echo "automatic_scaling:" >> app.yaml
+#           echo "  min_num_instances: 1" >> app.yaml
+#           echo "  max_num_instances: 2" >> app.yaml
+#           echo "beta_settings:" >> app.yaml
+#           echo "  cloud_sql_instances: fajri-learning-workspace:asia-southeast1:pg-binar-fa" >> app.yaml
+#           echo "env_variables:" >> app.yaml
+#           echo "  DATABASE_URL: '${{ secrets.DATABASE_URL }}'" >> app.yaml
+#           echo "  IMAGEKIT_PRIVATE_KEY: '${{ secrets.IMAGEKIT_PRIVATE_KEY }}'" >> app.yaml
+#           echo "  IMAGEKIT_API_KEY: '${{ secrets.IMAGEKIT_API_KEY }}'" >> app.yaml
+#           echo "  IMAGEKIT_URL_ENDPOINT: '${{ secrets.IMAGEKIT_URL_ENDPOINT }}'" >> app.yaml
+#           echo "  JWT_SECRET: '${{ secrets.JWT_SECRET }}'" >> app.yaml
+
+#       - name: Deploy to Google App Engine
+#         run: |
+#           gcloud app deploy app.yaml --quiet
