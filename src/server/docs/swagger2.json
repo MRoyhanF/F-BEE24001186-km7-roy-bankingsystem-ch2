@@ -7,6 +7,10 @@
     "contact": {
       "name": "Royhan",
       "email": "froyhan0@gmail.com"
+    },
+    "license": {
+      "name": "Github Link",
+      "url": "https://github.com/MRoyhanF/F-BEE24001186-km7-roy-bankingsystem-ch2.git"
     }
   },
   "servers": [
