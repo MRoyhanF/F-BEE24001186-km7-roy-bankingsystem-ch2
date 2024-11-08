@@ -5,7 +5,7 @@ import { upload } from "../libs/multer.js";
 
 const router = express.Router();
 
-router.get("/", checkToken, UserController.getAllUsers.bind(UserController));
+router.get("/", UserController.getAllUsers.bind(UserController));
 router.get("/:id", checkToken, UserController.getUserById.bind(UserController));
 router.patch("/:id", upload().single("file"), UserController.updateUser.bind(UserController));
 
