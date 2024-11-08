@@ -5,9 +5,9 @@ name: CI
 
 on:
   push:
-    branches: ["chapter-6"]
+    branches: ["main", "chapter-6"]
   pull_request:
-    branches: ["chapter-6"]
+    branches: ["main", "chapter-6"]
 
 jobs:
   test:
