@@ -1,3 +1,5 @@
+import "./config/instrument.js"
+import * as Sentry from "@sentry/node";
 import path from "path";
 import { fileURLToPath } from 'url';
 import express from "express";
@@ -9,10 +11,9 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import accountRoutes from "./routes/accountRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
-
 import * as indexController from "./controllers/indexController.js";
-
-import { handleError } from "./middlewares/errorHandler.js";
+// import { handleError } from "./middlewares/errorHandler.js";
+import ErrorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -33,7 +34,13 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/accounts", accountRoutes);
 app.use("/api/v1/transactions", transactionRoutes);
+app.get("/api/v1/error", () => {
+  throw new Error("This is an error route");
+});
 
-app.use(handleError);
+Sentry.setupExpressErrorHandler(app);
+
+// app.use(handleError);
+app.use(ErrorHandler.handleError);
 
 export default app;
