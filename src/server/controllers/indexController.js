@@ -5,13 +5,31 @@ export const homePage = (req, res) => {
   res.render("index", { title: "Binar Royhan", description: "Banking Open API" });
 };
 
+export const forgotPassword = (req, res) => {
+  res.render("forgot-password");
+};
+
+export const resetPassword = (req, res) => {
+  const { token } = req.query;
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(400).json({ message: "Token is invalid or expired" });
+    }
+
+    console.log("Decoded email:", decoded.email);
+
+    res.render("reset-password", { email: decoded.email });
+  });
+};
+
 export const mailer = async (req, res) => {
-  const { to } = req.body;
+  const { email } = req.body;
 
   const subject = "Reset Your Password";
   const text = "We received a request to reset the password for your account. Please click the link below to reset your password.";
 
-  const token = jwt.sign({ email: to }, process.env.JWT_SECRET, { expiresIn: "15m" });
+  const token = jwt.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: "15m" });
 
   const url = "http://localhost:3050/reset-password";
   const resetUrl = `${url}?token=${token}`;
@@ -48,7 +66,7 @@ export const mailer = async (req, res) => {
           <tr>
             <td align="center" style="font-size: 12px; color: #777; padding-top: 20px;">
               <p>Thank you for being with us!</p>
-              <p>Need help? <a href="mailto:support@yourwebsite.com" style="color: #4CAF50;">Contact us</a></p>
+              <p>Need help? <a href="mailto:froyhan0@gmail.com" style="color: #4CAF50;">Contact us</a></p>
             </td>
           </tr>
         </table>
@@ -58,7 +76,7 @@ export const mailer = async (req, res) => {
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to,
+    to: email,
     subject,
     text,
     html: htmlContent,
@@ -73,20 +91,4 @@ export const mailer = async (req, res) => {
     console.error("Error saat mengirim email:", error);
     res.status(500).json({ message: "Gagal mengirim email", error });
   }
-};
-
-export const resetPassword = (req, res) => {
-  const { token } = req.query; // Ambil token dari query parameter
-
-  // Verifikasi token
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(400).json({ message: "Token is invalid or expired" });
-    }
-
-    console.log("Decoded email:", decoded.email);
-
-    // res.status(200).json({ message: "Token valid, proceed with password reset" });
-    res.render("reset-password", { email: decoded.email });
-  });
 };
