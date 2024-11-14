@@ -9,5 +9,6 @@ const authController = new AuthController();
 router.post("/register", upload().single("file"), authController.register.bind(authController));
 router.post("/login", authController.login.bind(authController));
 router.post("/logout", checkToken, authController.logout.bind(authController));
+// router.patch("/update-password", authController.updatePassword.bind(authController));
 
 export default router;
