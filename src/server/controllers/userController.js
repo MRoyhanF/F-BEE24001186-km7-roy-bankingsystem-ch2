@@ -110,6 +110,26 @@ class UserController {
       }
     }
   }
+
+  async resetPassword(req, res) {
+    try {
+      const { id } = req.params;
+      const { password, confPassword } = req.body;
+
+      if (password !== confPassword) throw new Error400("Password does not match");
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const updatedUser = await this.userService.updateUser(id, { password: hashedPassword });
+      // res.status(200).json({ status: "Success", data: updatedUser });
+      return this.response.res200("Success", updatedUser, res);
+    } catch (error) {
+      if (error instanceof Error404) {
+        return this.response.res404(error.message, res);
+      } else {
+        return this.response.res500(res);
+      }
+    }
+  }
 }
 
 export default new UserController();
