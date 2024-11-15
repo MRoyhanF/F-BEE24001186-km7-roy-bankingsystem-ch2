@@ -38,6 +38,21 @@ class UserController {
     }
   }
 
+  async getUserByEmail(req, res) {
+    try {
+      const user = await this.userService.getUserByEmail(req.params.email);
+      if (!user) throw new Error404("User not found");
+      // return this.response.res200("Success", user, res);
+      res.status(200).json({ status: "Success", data: user });
+    } catch (error) {
+      if (error instanceof Error404) {
+        return this.response.res404(error.message, res);
+      } else {
+        return this.response.res500(res);
+      }
+    }
+  }
+
   async updateUser(req, res) {
     try {
       const { name, email, password, profile } = req.body;

@@ -85,7 +85,6 @@ export const mailer = async (req, res) => {
   try {
     // Mengirim email
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email terkirim: ", info.response);
     res.status(200).json({ message: "Email berhasil dikirim", info: info.response });
   } catch (error) {
     console.error("Error saat mengirim email:", error);
