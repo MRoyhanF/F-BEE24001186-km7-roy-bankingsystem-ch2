@@ -9,6 +9,10 @@ export const homePage = (req, res) => {
   res.render("index", { title: "Binar Royhan", description: "Banking Open API" });
 };
 
+export const notification = (req, res) => {
+  res.render("notification");
+};
+
 export const forgotPassword = (req, res) => {
   res.render("forgot-password");
 };
@@ -40,7 +44,10 @@ export const mailer = async (req, res) => {
     const secretKey = process.env.JWT_SECRET || "secret";
     const token = jwt.sign({ email: email, id: user.id }, secretKey, { expiresIn: "15h" });
 
-    const url = "http://localhost:3050/reset-password";
+    const path = process.env.DOMAIN;
+    console.log("path:", path);
+
+    const url = `${path}/reset-password`;
     const resetUrl = `${url}?token=${token}`;
 
     const htmlContent = `
