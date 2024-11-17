@@ -1,12 +1,28 @@
 import "dotenv/config";
 import http from "http";
 import app from "./server/app.js";
+import { Server as SocketIOServer } from "socket.io";
 import listEndpoints from "express-list-endpoints";
-// import * as Sentry from "@sentry/node";
 
 const PORT = process.env.PORT || 3000;
-const server = http.createServer(app);
 
+const server = http.createServer(app);
+export const io = new SocketIOServer(server);
+
+io.on("connection", (socket) => {
+  const total = io.engine.clientsCount;
+  console.log(`${total} user connected`);
+  socket.on("register", (msg) => {
+    io.emit("register", msg);
+    // console.log(`pesan: ${msg}`);
+  });
+  // Handle disconnection
+  socket.on("disconnect", () => {
+    console.log(`${total} user disconnected`);
+  });
+});
+
+// Start the server
 const start = async () => {
   try {
     console.log("=====================================================");
@@ -21,7 +37,6 @@ const start = async () => {
     });
   } catch (error) {
     console.log(`⚠️ [ERROR], ${error}`);
-    // Sentry.captureException(error); // Mengirim error ke Sentry jika ada masalah di startup
   }
 };
 

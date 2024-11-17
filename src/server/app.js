@@ -25,6 +25,14 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.set('views', viewsFolder);
 
+app.use((req, res, next) => {
+  console.log(`[REQUEST] ${req.method} ${req.url}`);
+  res.on("finish", () => {
+    console.log(`[RESPONSE] ${res.statusCode} - ${res.statusMessage}`);
+  });
+  next();
+});
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // API Routes
@@ -37,7 +45,7 @@ app.get("/api/v1/error", () => {
   throw new Error("This is an error route");
 });
 
-
+// sentry setup
 Sentry.setupExpressErrorHandler(app);
 
 // app.use(handleError);
