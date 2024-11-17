@@ -2,6 +2,7 @@ import { UserService } from "../services/userService.js";
 import jwt from "jsonwebtoken";
 import { UserValidation } from "../validations/userValidation.js";
 import { storeToken } from "../utils/tokenStore.js";
+import { io } from "../../main.js";
 import bcrypt from "bcrypt";
 
 import ResponseHandler from "../utils/response.js";
@@ -47,6 +48,7 @@ class AuthController {
         imageUrl
       );
 
+      io.emit("register", `Welcome ${name} with email ${email}`);
       return this.response.res201("User created successfully", newUser, res);
     } catch (error) {
       if (error instanceof Error400) {

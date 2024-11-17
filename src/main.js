@@ -13,7 +13,9 @@ io.on("connection", (socket) => {
   const total = io.engine.clientsCount;
   console.log(`${total} user connected`);
   socket.on("register", (msg) => {
-    io.emit("register", msg);
+    const responseMessage = `Welcome ${msg} with email...`;
+    io.emit("register", responseMessage);
+    // io.emit("register", msg);
     // console.log(`pesan: ${msg}`);
   });
   // Handle disconnection
