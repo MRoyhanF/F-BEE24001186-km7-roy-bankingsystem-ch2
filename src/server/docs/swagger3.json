@@ -273,15 +273,6 @@
                   "file": {
                     "type": "string",
                     "format": "binary"
-                  },
-                  "profile[identity_type]": {
-                    "type": "string"
-                  },
-                  "profile[identity_number]": {
-                    "type": "string"
-                  },
-                  "profile[address]": {
-                    "type": "string"
                   }
                 }
               }
