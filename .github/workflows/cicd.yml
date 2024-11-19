@@ -71,6 +71,10 @@ jobs:
           echo "  IMAGEKIT_API_KEY: '${{ secrets.IMAGEKIT_API_KEY }}'" >> app.yaml
           echo "  IMAGEKIT_URL_ENDPOINT: '${{ secrets.IMAGEKIT_URL_ENDPOINT }}'" >> app.yaml
           echo "  JWT_SECRET: '${{ secrets.JWT_SECRET }}'" >> app.yaml
+          echo " SENTRY_DSN: '${{ secrets.SENTRY_DSN }}'" >> app.yaml
+          echo " EMAIL_USER: '${{ secrets.EMAIL_USER }}'" >> app.yaml
+          echo " EMAIL_PASSWORD: '${{ secrets.EMAIL_PASSWORD }}'" >> app.yaml
+          echo " DOMAIN: '${{ secrets.DOMAIN }}'" >> app.yaml
 
       - name: Deploy to Google App Engine
         run: |
