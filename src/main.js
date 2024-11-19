@@ -1,16 +1,36 @@
 import "dotenv/config";
-// import dotenv from "dotenv";
 import http from "http";
 import app from "./server/app.js";
+import { Server as SocketIOServer } from "socket.io";
 import listEndpoints from "express-list-endpoints";
 
-// Menentukan environment dan file .env sesuai environment
-// const env = process.env.NODE_ENV || "development";
-// dotenv.config({ path: `.env.${env}` });
-
 const PORT = process.env.PORT || 3000;
-const server = http.createServer(app);
 
+const server = http.createServer(app);
+export const io = new SocketIOServer(server);
+
+io.on("connection", (socket) => {
+  const total = io.engine.clientsCount;
+  console.log(`${total} user connected`);
+  // register
+  socket.on("register", (msg) => {
+    const responseMessage = `Welcome ${msg} with email...`;
+    io.emit("register", responseMessage);
+    // io.emit("register", msg);
+    // console.log(`pesan: ${msg}`);
+  });
+  //  change password
+  socket.on("changePassword", (msg) => {
+    const responseMessage = `Password ${msg} Changges...`;
+    io.emit("changePassword", responseMessage);
+  });
+  // Handle disconnection
+  socket.on("disconnect", () => {
+    console.log(`${total} user disconnected`);
+  });
+});
+
+// Start the server
 const start = async () => {
   try {
     console.log("=====================================================");
