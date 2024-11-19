@@ -1,21 +1,31 @@
 import jwt from "jsonwebtoken";
-import { ErrorHandler } from "../middlewares/errorHandler.js";
+import ResponseHandler from "../utils/response.js";
 import { isTokenLoggedOut } from "../utils/tokenStore.js";
+
+const response = new ResponseHandler();
 
 export const checkToken = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
 
-  if (!token) return res.status(401).json({ message: "No token provided" });
+  if (!token) {
+    return response.res401("Unauthorized", res);
+  }
 
   if (isTokenLoggedOut(token)) {
-    return res.status(401).json({ message: "Token is logged out" });
+    // console.log("Token is logged out");
+    return response.res401(res);
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    const payload = {
+      id: decoded.id,
+      name: decoded.name,
+    };
+    req.user = payload;
     next();
   } catch (error) {
-    next(new ErrorHandler(error.statusCode || 401, error.message));
+    console.log("JWT Verification Error:", error.message);
+    return response.res500(res);
   }
 };

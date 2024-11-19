@@ -1,16 +1,20 @@
 import { UserService } from "../services/userService.js";
-import { ErrorHandler } from "../middlewares/errorHandler.js";
 import jwt from "jsonwebtoken";
 import { UserValidation } from "../validations/userValidation.js";
 import { storeToken } from "../utils/tokenStore.js";
+import { io } from "../../main.js";
 import bcrypt from "bcrypt";
+
+import ResponseHandler from "../utils/response.js";
+import { Error400, Error404 } from "../utils/custom_error.js";
 
 class AuthController {
   constructor() {
     this.userService = new UserService();
+    this.response = new ResponseHandler();
   }
 
-  async register(req, res, next) {
+  async register(req, res) {
     try {
       const { name, email, password, profile } = req.body;
 
@@ -24,13 +28,17 @@ class AuthController {
       let imageUrl = null;
       if (req.file) {
         if (req.file.size > 1024 * 1024 * 2) {
-          throw new ErrorHandler(400, "File size is too large");
+          io.emit("register", `Failed Registration File size is too large`);
+          throw new Error400(400, "File size is too large");
         }
         imageUrl = await this.userService.uploadImageToImageKit(req.file);
       }
 
       const validEmail = await this.userService.getUserByEmail(email);
-      if (validEmail) throw new ErrorHandler(400, "Email already exists");
+      if (validEmail) {
+        io.emit("register", `Failed Registration ${email} Already Exist`);
+        throw new Error400("Email already exists");
+      }
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -44,44 +52,60 @@ class AuthController {
         imageUrl
       );
 
-      res.status(201).json({ status: "Success", data: newUser });
+      io.emit("register", `Welcome ${name} with email ${email}`);
+      return this.response.res201("User created successfully", newUser, res);
     } catch (error) {
-      next(new ErrorHandler(error.statusCode || 500, error.message));
+      if (error instanceof Error400) {
+        return this.response.res400(error.message, res);
+      } else {
+        console.log(error.message);
+        return this.response.res500(res);
+      }
     }
   }
 
-  async login(req, res, next) {
+  async login(req, res) {
     try {
       const { email, password, confmPassword } = req.body;
 
       const user = await this.userService.getUserByEmail(email);
-      if (!user) throw new ErrorHandler(404, "User not found");
+      if (!user) throw new Error404("User not found");
 
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) throw new ErrorHandler(400, "Invalid password");
+      if (!isMatch) throw new Error400("Invalid password");
 
-      if (password !== confmPassword) throw new ErrorHandler(400, "Password does not match");
+      if (password !== confmPassword) throw new Error400("Password does not match");
 
-      // Generate JWT token
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      const secretKey = process.env.JWT_SECRET || "secret";
+      const token = jwt.sign({ id: user.id, name: user.name }, secretKey, { expiresIn: "1h" });
 
-      res.status(200).json({ status: "Success", token });
+      return this.response.res200("Login successful", { token }, res);
     } catch (error) {
-      next(new ErrorHandler(error.statusCode || 500, error.message));
+      if (error instanceof Error400) {
+        return this.response.res400(error.message, res);
+      } else if (error instanceof Error404) {
+        return this.response.res404(error.message, res);
+      } else {
+        return this.response.res500(res);
+      }
     }
   }
 
-  async logout(req, res, next) {
+  async logout(req, res) {
     try {
       const token = req.headers.authorization?.split(" ")[1];
 
-      if (!token) throw new ErrorHandler(400, "No token provided");
+      if (!token) throw new Error400("No token provided");
 
       storeToken(token);
 
-      res.status(200).json({ status: "Success", message: "User logged out successfully" });
+      return this.response.res200("User logged out successfully", null, res);
     } catch (error) {
-      next(new ErrorHandler(error.statusCode || 500, error.message));
+      if (error instanceof Error400) {
+        return this.response.res400(error.message, res);
+      } else {
+        return this.response.res500(res);
+      }
     }
   }
 }

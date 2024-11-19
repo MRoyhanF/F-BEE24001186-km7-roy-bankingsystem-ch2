@@ -1,16 +1,27 @@
-export class ErrorHandler extends Error {
-  constructor(statusCode, message) {
-    super();
-    this.statusCode = statusCode;
-    this.message = message;
+import ResponseHandler from "../utils/response.js";
+import { Error400 } from "../utils/custom_error.js";
+
+class ErrorHandler {
+  static handle404(req, res) {
+    const responseHandler = new ResponseHandler();
+    responseHandler.res404("URL Not Found!", res);
+  }
+
+  static handleError(err, req, res, next) {
+    if (err) {
+      if (err instanceof Error400) {
+        const responseHandler = new ResponseHandler();
+        console.log("Client error: " + err.message);
+        responseHandler.res400(err.message, res);
+      } else {
+        const responseHandler = new ResponseHandler();
+        console.log("Server error: " + err.message);
+        responseHandler.res500(res);
+      }
+    } else {
+      next();
+    }
   }
 }
 
-export const handleError = (err, req, res) => {
-  const { statusCode, message } = err;
-  res.status(statusCode || 500).json({
-    status: "error",
-    statusCode: statusCode || 500,
-    message: message || "Internal Server Error",
-  });
-};
+export default ErrorHandler;

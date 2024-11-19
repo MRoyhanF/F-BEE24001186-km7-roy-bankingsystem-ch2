@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notifictoin</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+  </head>
+  <body>
+    <div class="w-full flex flex-col text-center p-12 h-screen justify-between gap-8">
+      <div class="h-full flex flex-col gap-4">
+        <h1 class="font-bold underline text-xl">Notofication Page</h1>
+        <div class="flex flex-row gap-8 justify-between">
+          <div class="w-full border-2 border-gray-800 rounded-md">
+            <h1 class="text-center border-b-1 bg-gray-300">Respon Welcome</h1>
+            <ul id="welcome"></ul>
+          </div>
+          <div class="w-full border-2 border-gray-800 rounded-md">
+            <h1 class="text-center border-b-1 bg-gray-300">Respone Success Change Password</h1>
+            <ul id="changePassword"></ul>
+          </div>
+        </div>
+      </div>
+      <!-- <form class="flex flex-row justify-between gap-4" action="" id="form">
+        <input class="w-full bg-gray-200 rounded-md px-4 border-2 border-black" id="input" autocomplete="off" placeholder="inputan" />
+        <button class="bg-blue-400 px-4 py-2 rounded-md" type="submit">tombol</button>
+      </form> -->
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // const socket = io("http://localhost:3000");
+      const socket = io("<%= domain %>");
+
+      // const form = document.getElementById("form");
+      // const input = document.getElementById("input");
+      const welcome = document.getElementById("welcome");
+      const changePassword = document.getElementById("changePassword");
+
+      // emit message to server when form submitted
+      // form.addEventListener("submit", (e) => {
+      //   e.preventDefault();
+      //   if (input.value) {
+      //     socket.emit("register", input.value);
+      //     input.value = "";
+      //   }
+      // });
+
+      // listen message from server on register
+      socket.on("register", (msg) => {
+        const item = document.createElement("li");
+        item.textContent = msg;
+        welcome.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
+      // listen message from server on changePassword
+      socket.on("changePassword", (msg) => {
+        const item = document.createElement("li");
+        item.textContent = msg;
+        changePassword.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    </script>
+  </body>
+</html>

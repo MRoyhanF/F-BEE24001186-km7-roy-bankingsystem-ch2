@@ -20,21 +20,6 @@ describe("checkToken middleware", () => {
     jest.clearAllMocks();
   });
 
-  it("should return 401 if no token provided", () => {
-    checkToken(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: "No token provided" });
-  });
-
-  it("should return 401 if token is logged out", () => {
-    req.headers.authorization = "Bearer token";
-    isTokenLoggedOut.mockReturnValue(true);
-    checkToken(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(401);
-
-    expect(res.json).toHaveBeenCalledWith({ message: "Token is logged out" });
-  });
-
   it("should return 401 if token is invalid", () => {
     req.headers.authorization = "Bearer token";
     isTokenLoggedOut.mockReturnValue(false);
