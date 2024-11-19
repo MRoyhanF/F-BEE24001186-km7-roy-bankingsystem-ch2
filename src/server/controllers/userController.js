@@ -1,6 +1,7 @@
 import { UserService } from "../services/userService.js";
 import { UserValidation } from "../validations/userValidation.js";
 import bcrypt from "bcrypt";
+import { io } from "../../main.js";
 
 import ResponseHandler from "../utils/response.js";
 import { Error400, Error404 } from "../utils/custom_error.js";
@@ -116,15 +117,23 @@ class UserController {
       const { id } = req.params;
       const { password, confPassword } = req.body;
 
-      if (password !== confPassword) throw new Error400("Password does not match");
+      const user = await this.userService.getUserById(id);
+
+      if (password !== confPassword) {
+        io.emit("changePassword", `user by Email ${user.email} Failed to Change a Password`);
+        throw new Error400("Password does not match");
+      }
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const updatedUser = await this.userService.updateUser(id, { password: hashedPassword });
-      // res.status(200).json({ status: "Success", data: updatedUser });
+
+      io.emit("changePassword", `user by Email ${user.email} Success to Change a Password`);
       return this.response.res200("Success", updatedUser, res);
     } catch (error) {
       if (error instanceof Error404) {
         return this.response.res404(error.message, res);
+      } else if (error instanceof Error400) {
+        return this.response.res400(error.message, res);
       } else {
         return this.response.res500(res);
       }

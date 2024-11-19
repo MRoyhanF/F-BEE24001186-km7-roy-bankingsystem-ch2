@@ -5,8 +5,10 @@ const router = express.Router();
 
 router.get("/", homePage);
 router.get("/notification", notification);
-router.post("/send-email", mailer);
 router.get("/forgot-password", forgotPassword);
 router.get("/reset-password", resetPassword);
+
+// api
+router.post("/api/v1/send-email", mailer);
 
 export default router;

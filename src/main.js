@@ -12,11 +12,17 @@ export const io = new SocketIOServer(server);
 io.on("connection", (socket) => {
   const total = io.engine.clientsCount;
   console.log(`${total} user connected`);
+  // register
   socket.on("register", (msg) => {
     const responseMessage = `Welcome ${msg} with email...`;
     io.emit("register", responseMessage);
     // io.emit("register", msg);
     // console.log(`pesan: ${msg}`);
+  });
+  //  change password
+  socket.on("changePassword", (msg) => {
+    const responseMessage = `Password ${msg} Changges...`;
+    io.emit("changePassword", responseMessage);
   });
   // Handle disconnection
   socket.on("disconnect", () => {

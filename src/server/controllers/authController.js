@@ -28,13 +28,17 @@ class AuthController {
       let imageUrl = null;
       if (req.file) {
         if (req.file.size > 1024 * 1024 * 2) {
+          io.emit("register", `Failed Registration File size is too large`);
           throw new Error400(400, "File size is too large");
         }
         imageUrl = await this.userService.uploadImageToImageKit(req.file);
       }
 
       const validEmail = await this.userService.getUserByEmail(email);
-      if (validEmail) throw new Error400("Email already exists");
+      if (validEmail) {
+        io.emit("register", `Failed Registration ${email} Already Exist`);
+        throw new Error400("Email already exists");
+      }
 
       const hashedPassword = await bcrypt.hash(password, 10);
 

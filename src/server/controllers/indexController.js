@@ -1,5 +1,6 @@
 import { transporter } from "../config/mailer.js";
 import jwt from "jsonwebtoken";
+
 import { UserService } from "../services/userService.js";
 import { Error404 } from "../utils/custom_error.js";
 
@@ -22,6 +23,7 @@ export const resetPassword = (req, res) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const id = decoded.id;
   const email = decoded.email;
+
   res.render("reset-password", { email, id });
 };
 
