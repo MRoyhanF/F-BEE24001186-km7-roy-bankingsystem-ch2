@@ -64,17 +64,16 @@ jobs:
           echo "  min_num_instances: 1" >> app.yaml
           echo "  max_num_instances: 2" >> app.yaml
           echo "beta_settings:" >> app.yaml
-          echo "  cloud_sql_instances: fajri-learning-workspace:asia-southeast1:pg-binar-fa" >> app.yaml
           echo "env_variables:" >> app.yaml
           echo "  DATABASE_URL: '${{ secrets.DATABASE_URL }}'" >> app.yaml
           echo "  IMAGEKIT_PRIVATE_KEY: '${{ secrets.IMAGEKIT_PRIVATE_KEY }}'" >> app.yaml
           echo "  IMAGEKIT_API_KEY: '${{ secrets.IMAGEKIT_API_KEY }}'" >> app.yaml
           echo "  IMAGEKIT_URL_ENDPOINT: '${{ secrets.IMAGEKIT_URL_ENDPOINT }}'" >> app.yaml
           echo "  JWT_SECRET: '${{ secrets.JWT_SECRET }}'" >> app.yaml
-          echo " SENTRY_DSN: '${{ secrets.SENTRY_DSN }}'" >> app.yaml
-          echo " EMAIL_USER: '${{ secrets.EMAIL_USER }}'" >> app.yaml
-          echo " EMAIL_PASSWORD: '${{ secrets.EMAIL_PASSWORD }}'" >> app.yaml
-          echo " DOMAIN: '${{ secrets.DOMAIN }}'" >> app.yaml
+          echo "  SENTRY_DSN: '${{ secrets.SENTRY_DSN }}'" >> app.yaml
+          echo "  EMAIL_USER: '${{ secrets.EMAIL_USER }}'" >> app.yaml
+          echo "  EMAIL_PASSWORD: '${{ secrets.EMAIL_PASSWORD }}'" >> app.yaml
+          echo "  DOMAIN: '${{ secrets.DOMAIN }}'" >> app.yaml
 
       - name: Deploy to Google App Engine
         run: |
