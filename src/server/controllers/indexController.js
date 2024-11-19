@@ -11,7 +11,9 @@ export const homePage = (req, res) => {
 };
 
 export const notification = (req, res) => {
-  res.render("notification");
+  const domain = process.env.DOMAIN;
+
+  res.render("notification", { domain });
 };
 
 export const forgotPassword = (req, res) => {

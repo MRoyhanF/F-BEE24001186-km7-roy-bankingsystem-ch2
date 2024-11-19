@@ -12,7 +12,7 @@ export const checkToken = (req, res, next) => {
   }
 
   if (isTokenLoggedOut(token)) {
-    console.log("Token is logged out");
+    // console.log("Token is logged out");
     return response.res401(res);
   }
 

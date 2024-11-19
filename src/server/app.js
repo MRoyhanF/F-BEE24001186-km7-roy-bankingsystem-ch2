@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import express from "express";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./docs/swagger2.json" with { type: "json" };
+import swaggerDocument from "./docs/swagger3.json" with { type: "json" };
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -16,6 +16,7 @@ import ErrorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
+// const __filename = path.resolve();
 const __dirname = path.dirname(__filename);
 const viewsFolder = path.resolve(__dirname, '../views');
 
