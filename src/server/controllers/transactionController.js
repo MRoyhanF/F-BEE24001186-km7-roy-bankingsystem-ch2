@@ -18,11 +18,8 @@ class TransactionController {
       const transaction = await this.transactionService.getAllTransaction();
       return this.response.res200("Success", transaction, res);
     } catch (error) {
-      if (error instanceof Error400) {
-        return this.response.res400(error.message, res);
-      } else {
-        return this.response.res500(res);
-      }
+      console.log(error);
+      return this.response.res500(res);
     }
   }
 
@@ -32,8 +29,8 @@ class TransactionController {
       if (!transaction) throw new Error404("Transaction Not Found");
       return this.response.res200("Success", transaction, res);
     } catch (error) {
-      if (error instanceof Error400) {
-        return this.response.res400(error.message, res);
+      if (error instanceof Error404) {
+        return this.response.res404(error.message, res);
       } else {
         return this.response.res500(res);
       }
@@ -85,8 +82,8 @@ class TransactionController {
       await this.transactionService.deleteTransaction(req.params.id);
       res.status(200).json({ Status: "Success", Message: "Transaction Deleted Successfully" });
     } catch (error) {
-      if (error instanceof Error400) {
-        return this.response.res400(error.message, res);
+      if (error instanceof Error404) {
+        return this.response.res404(error.message, res);
       } else {
         return this.response.res500(res);
       }
@@ -132,8 +129,8 @@ class TransactionController {
 
       return this.response.res200("Success", accountStatus, res);
     } catch (error) {
-      if (error instanceof Error400) {
-        return this.response.res400(error.message, res);
+      if (error instanceof Error404) {
+        return this.response.res404(error.message, res);
       } else {
         return this.response.res500(res);
       }

@@ -1,38 +1,80 @@
 import { jest, describe, it, expect } from "@jest/globals";
-import { ErrorHandler, handleError } from "../errorHandler";
+import ErrorHandler from "../errorHandler.js";
+import { Error400 } from "../../utils/custom_error.js";
 
-describe("errorHandler", () => {
-  it("should return error message and status code", () => {
-    const err = new ErrorHandler(404, "Not Found");
+describe("Error Handler", () => {
+  it("should return 404 response", () => {
     const req = {};
     const res = {
-      status: jest.fn(() => res),
+      status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    const next = jest.fn();
-    handleError(err, req, res, next);
+
+    ErrorHandler.handle404(req, res);
+
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({
-      status: "error",
-      statusCode: 404,
-      message: "Not Found",
+      status: {
+        code: 404,
+        message: "URL Not Found!",
+      },
+      data: null,
     });
   });
 
-  it("should return error message and status code with default value", () => {
-    const err = new ErrorHandler();
+  it("should return 400 response", () => {
     const req = {};
     const res = {
-      status: jest.fn(() => res),
+      status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
+
     const next = jest.fn();
-    handleError(err, req, res, next);
+
+    const err = new Error400("Bad Request!");
+
+    ErrorHandler.handleError(err, req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      status: {
+        code: 400,
+        message: "Bad Request! - Bad Request!",
+      },
+      data: null,
+    });
+  });
+
+  it("should return 500 response", () => {
+    const req = {};
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const next = jest.fn();
+
+    const err = new Error("Internal Server Error");
+
+    ErrorHandler.handleError(err, req, res, next);
+
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
-      status: "error",
-      statusCode: 500,
-      message: "Internal Server Error",
+      status: {
+        code: 500,
+        message: "Server error!",
+      },
+      data: null,
     });
+  });
+
+  it("should call next", () => {
+    const req = {};
+    const res = {};
+    const next = jest.fn();
+
+    ErrorHandler.handleError(null, req, res, next);
+
+    expect(next).toHaveBeenCalled();
   });
 });
