@@ -46,7 +46,7 @@ export const mailer = async (req, res) => {
     const text = "We received a request to reset the password for your account. Please click the link below to reset your password.";
 
     const secretKey = process.env.JWT_SECRET || "secret";
-    const token = jwt.sign({ email: email, id: user.id }, secretKey, { expiresIn: "15h" });
+    const token = jwt.sign({ email: email, id: user.id }, secretKey, { expiresIn: "15m" });
 
     const path = process.env.DOMAIN;
     console.log("path:", path);
