@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - cloud-rum
+      - cloud-run
   pull_request:
     branches:
-      - cloud-rum
+      - cloud-run
 
 jobs:
   CI:
@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18]  # Test against multiple Node.js versions
+        node-version: [18] # Test against multiple Node.js versions
 
     steps:
       # Step 1: Check out the repository

@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - cloud-rum
+      - cloud-run
 
 jobs:
   CD:
